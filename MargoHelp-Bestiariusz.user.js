@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.9.8.2
+// @version      1.9.8.9
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -32,7 +32,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.9.8.2',
+    version: '1.9.8.9',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -61,6 +61,7 @@
   const STORE_E2_CHANCE_VARIANT = 'mh_bestiary_v13_e2_chance_variant';
   const STORE_LOOT_MULTIPLIER = 'mh_bestiary_v196_loot_multiplier';
   const STORE_LOOT_BONUS = 'mh_bestiary_v196_loot_bonus';
+  const STORE_COMBAT_LEVEL_RANGE = 'mh_bestiary_v1983_combat_level_range';
 
   const RARITIES = {
     legendary: { label: 'Legendarne', order: 1, cls: 'mhb-leg' },
@@ -208,13 +209,13 @@
     price: 'Cena',
     bag: 'Miejsca w torbie',
     runes: 'Runy',
-    dmgmulphysical: 'Bonus do obrażeń fizycznych',
-    dmgmulfire: 'Bonus do obrażeń od ognia',
-    dmgmulfrost: 'Bonus do obrażeń od zimna',
-    dmgmullight: 'Bonus do obrażeń od błyskawic',
-    dmgmulpoison: 'Bonus do obrażeń od trucizny',
-    dmgmulwound: 'Bonus do głębokiej rany',
-    dmgmulabsolute: 'Bonus do obrażeń absolutnych'
+    dmgmulphysical: 'Wszystkie obrażenia',
+    dmgmulfire: 'Wszystkie obrażenia',
+    dmgmulfrost: 'Wszystkie obrażenia',
+    dmgmullight: 'Wszystkie obrażenia',
+    dmgmulpoison: 'Wszystkie obrażenia',
+    dmgmulwound: 'Wszystkie obrażenia',
+    dmgmulabsolute: 'Wszystkie obrażenia'
   };
 
   const LEGENDARY_BONUS_LABELS = {
@@ -274,6 +275,7 @@
   if (!ELITY_II_CHANCE_VARIANTS[e2ChanceVariant]) e2ChanceVariant = 'standard';
   let lootMultiplier = Math.round(clampNumber(loadJson(STORE_LOOT_MULTIPLIER, 1), 1, 5, 1));
   let lootBonus = clampNumber(loadJson(STORE_LOOT_BONUS, 0), 0, 100, 0);
+  let combatLevelRange = Math.round(clampNumber(loadJson(STORE_COMBAT_LEVEL_RANGE, 13), 13, 50, 13));
 
   const css = `
     #mh-bestiary{position:fixed;top:80px;right:24px;width:470px;height:650px;min-width:340px;min-height:320px;max-width:96vw;max-height:96vh;z-index:2147483647;background:#0b0e10;color:#e7ecef;border:1px solid #2d6b56;border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.55);font:12px Arial,sans-serif;overflow:hidden}
@@ -322,11 +324,10 @@
     .mhb-mob-top{display:grid;grid-template-columns:56px 1fr;gap:9px;align-items:center}
     .mhb-bigimg{width:56px;height:56px;border:1px solid #304143;border-radius:6px;background:#030607;display:flex;align-items:center;justify-content:center;overflow:hidden}
     .mhb-bigimg img{max-width:56px;max-height:56px}
+    .mhb-mob-link{display:block;width:56px;height:56px;border-radius:6px;color:inherit;text-decoration:none}
+    .mhb-mob-link:hover .mhb-bigimg{border-color:#58e5a9;box-shadow:0 0 9px rgba(88,229,169,.35)}
     .mhb-row{display:flex;justify-content:space-between;gap:8px;margin:3px 0;color:#aebdb8}
     .mhb-value{color:#fff;font-weight:bold;text-align:right}
-    .mhb-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-    .mhb-btn{height:30px;border:1px solid #2b4548;border-radius:6px;background:#131d20;color:#e6f3ee;font-weight:bold;cursor:pointer}
-    .mhb-btn:hover{border-color:#58e5a9}
     .mhb-section-title{font-weight:800;color:#e9f5f0;margin:8px 0 6px;border-bottom:1px solid #1f3032;padding-bottom:5px}
     .mhb-rarity{border:1px solid #243538;background:#0a1012;border-radius:7px;margin-bottom:7px;overflow:hidden}
     .mhb-rarity h4{margin:0;padding:6px 8px;font-size:11px;background:#11191b;display:flex;justify-content:space-between}
@@ -417,6 +418,7 @@
         <label><input type="checkbox" id="mhb-color-elements"> Koloruj wartości żywiołów i odporności</label>
         <label>Mnożnik świata <select class="mhb-option-select" id="mhb-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label>
         <label>Zmniejszenie braku łupu <input class="mhb-option-number" type="number" id="mhb-loot-bonus" min="0" max="100" step="1" inputmode="numeric">%</label>
+        <label>Zakres bicia ± <input class="mhb-option-number" type="number" id="mhb-combat-level-range" min="13" max="50" step="1" inputmode="numeric"> lvl</label>
       </div>
       <div class="mhb-controls">
         <input class="mhb-input" id="mhb-search" placeholder="Szukaj potwora">
@@ -502,6 +504,12 @@
       applyPreferences();
       if (selectedDetails) renderDetails(selectedDetails);
     });
+    document.getElementById('mhb-combat-level-range').addEventListener('change', e => {
+      combatLevelRange = Math.round(clampNumber(e.target.value, 13, 50, 13));
+      saveJson(STORE_COMBAT_LEVEL_RANGE, combatLevelRange);
+      applyPreferences();
+      if (selectedDetails) renderDetails(selectedDetails);
+    });
 
     enableDrag();
     enableResize();
@@ -516,6 +524,8 @@
     if (multiplierInput) multiplierInput.value = String(lootMultiplier);
     const bonusInput = document.getElementById('mhb-loot-bonus');
     if (bonusInput) bonusInput.value = String(lootBonus);
+    const rangeInput = document.getElementById('mhb-combat-level-range');
+    if (rangeInput) rangeInput.value = String(combatLevelRange);
     tooltip.classList.toggle('mhb-color-elements', !!colorElements);
   }
 
@@ -1652,21 +1662,19 @@
   function renderDetails(details) {
     const box = document.getElementById('mhb-details');
     const groups = groupItems(details.items);
-    const rarityCount = details.items.filter(i => i.rarity && i.rarity !== 'unknown').length;
+    const combatLevelText = getCombatLevelRangeText(details);
 
     box.innerHTML = `
       <div class="mhb-card">
         <div class="mhb-mob-top">
-          <div class="mhb-bigimg">${details.image ? `<img src="${esc(details.image)}" alt="">` : '<span class="mhb-placeholder"></span>'}</div>
+          <a class="mhb-mob-link" href="${esc(details.mob.url)}" target="_blank" rel="noopener noreferrer" title="Otwórz w MargoHelp">
+            <div class="mhb-bigimg">${details.image ? `<img src="${esc(details.image)}" alt="">` : '<span class="mhb-placeholder"></span>'}</div>
+          </a>
           <div>
             <div class="mhb-row"><span>Mob:</span><span class="mhb-value">${esc(details.name)}</span></div>
             <div class="mhb-row"><span>Typ:</span><span class="mhb-value">${esc(details.typeText)}</span></div>
-            <div class="mhb-row"><span>Looty:</span><span class="mhb-value">${details.items.length} | rozpoznane ${rarityCount}</span></div>
+            ${combatLevelText ? `<div class="mhb-row"><span>Zakres bicia:</span><span class="mhb-value">${esc(combatLevelText)}</span></div>` : ''}
           </div>
-        </div>
-        <div class="mhb-actions">
-          <button class="mhb-btn" id="mhb-open">Otworz MargoHelp</button>
-          <button class="mhb-btn" id="mhb-copy">Kopiuj nazwe</button>
         </div>
       </div>
 
@@ -1675,8 +1683,6 @@
       ${groups.map(group => renderItemGroup(group)).join('') || '<div class="mhb-empty">Brak lootow na stronie.</div>'}
     `;
 
-    document.getElementById('mhb-open').addEventListener('click', () => window.open(details.mob.url, '_blank'));
-    document.getElementById('mhb-copy').addEventListener('click', () => copyText(details.name));
     const chanceSelect = document.getElementById('mhb-e2-chance-variant');
     if (chanceSelect) {
       chanceSelect.addEventListener('change', e => {
@@ -1696,6 +1702,16 @@
       });
     }
     bindItemTooltips(details);
+  }
+
+  function getCombatLevelRangeText(details) {
+    if (!details || !details.mob) return '';
+    if (!['Elity', 'Elity II', 'Herosi'].includes(details.mob.category)) return '';
+    const mobLevel = Number(details.mob.level);
+    if (!Number.isFinite(mobLevel) || mobLevel <= 0) return '';
+    const minimum = Math.max(1, mobLevel - combatLevelRange);
+    const maximum = mobLevel + combatLevelRange;
+    return minimum + '–' + maximum + ' lvl (±' + combatLevelRange + ')';
   }
 
   function renderDropChanceHelp(details) {
@@ -2166,7 +2182,7 @@
       if (String(stats.btype) === '18') rows.push({ text: 'Tylko klucze', html: false });
       handled.add('btype');
     }
-    if (stats.runes) add('runes', specialLine('Dodaje ' + stats.runes + ' Smoczych Run'), true);
+    if (stats.runes) add('runes', 'Dodaje <span class="mhb-tip-stat-value">' + esc(stats.runes) + '</span> Smoczych Run', true);
     if (stats.ttl) addPlain('ttl', STAT_LABELS.ttl, stats.ttl);
 
     Object.keys(stats).forEach(rawKey => {
