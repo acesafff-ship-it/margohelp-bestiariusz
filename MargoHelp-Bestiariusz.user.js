@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.6
+// @version      1.8
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.6',
+    version: '1.8',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -72,14 +72,29 @@
       ['Heroiczne', 'ok. 2%'],
       ['Legendarne', 'ok. 0.06%']
     ],
-    'Elity': [['Brak danych', 'Brak pewnych danych']],
-    'Herosi': [['Brak danych', 'Brak pewnych danych']],
+    'Elity': [
+      ['Brak łupu', '~50%'],
+      ['Pospolite', '~45%'],
+      ['Unikatowe', '~4%'],
+      ['Heroiczne', '~1%']
+    ],
+    'Herosi': [
+      ['Pospolite', '38,34%'],
+      ['Unikatowe', '35%'],
+      ['Heroiczne', '24,92%'],
+      ['Legendarne', '1,74%'],
+      ['Legendarna skrytka', '0,15%–0,21%']
+    ],
     'Kolosi': [
       ['Unikatowe', 'ok. 70%'],
-      ['Heroiczne', 'ok. 29.7%'],
-      ['Legendarne', 'ok. 0.3%']
+      ['Heroiczne', 'ok. 29,7%'],
+      ['Legendarne', 'ok. 0,3%']
     ],
-    'Tytani': [['Brak danych', 'Brak pewnych danych']]
+    'Tytani': [
+      ['Unikatowe', '~54,1%'],
+      ['Heroiczne', '~45%'],
+      ['Legendarne', '~0,9%']
+    ]
   };
 
   const ELITY_II_CHANCE_VARIANTS = {
@@ -1621,7 +1636,22 @@
   }
 
   function renderDropChanceHelp(details) {
-    if (!details || !details.mob || details.mob.category !== 'Elity II') return '';
+    if (!details || !details.mob) return '';
+    const category = details.mob.category;
+    if (category !== 'Elity II') {
+      if (!['Elity', 'Herosi', 'Kolosi', 'Tytani'].includes(category)) return '';
+      const rows = DROP_CHANCES[category] || [['Brak danych', 'Brak pewnych danych']];
+      const hasData = !(rows.length === 1 && rows[0][0] === 'Brak danych');
+      return `
+        <div class="mhb-drop-help" tabindex="0" aria-label="Przybliżone szanse na łup">?
+          <div class="mhb-drop-popover">
+            <strong>Przybliżone szanse na łup — ${esc(category)}</strong>
+            <div id="mhb-chance-static-rows">${renderChanceRows(rows)}</div>
+            <div class="mhb-chance-note">${hasData ? 'Wartości są przybliżone i mogą różnić się zależnie od mechanizmu.' : 'Nie ma obecnie pewnych, publicznie potwierdzonych wartości dla tej kategorii.'}</div>
+          </div>
+        </div>
+      `;
+    }
     const variant = ELITY_II_CHANCE_VARIANTS[e2ChanceVariant] || ELITY_II_CHANCE_VARIANTS.standard;
     const options = Object.entries(ELITY_II_CHANCE_VARIANTS).map(([key, entry]) =>
       `<option value="${esc(key)}"${key === e2ChanceVariant ? ' selected' : ''}>${esc(entry.label)}</option>`
