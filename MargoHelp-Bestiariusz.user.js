@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podreczny v1.2
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.2
+// @version      1.3
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.2',
+    version: '1.3',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -53,6 +53,7 @@
   const STORE_VISIBLE = 'mh_bestiary_v433_visible';
   const STORE_LAUNCHER_POS = 'mh_bestiary_v434_launcher_pos';
   const STORE_COLOR_ELEMENTS = 'mh_bestiary_v442_color_elements';
+  const STORE_E2_CHANCE_VARIANT = 'mh_bestiary_v13_e2_chance_variant';
 
   const RARITIES = {
     legendary: { label: 'Legendarne', order: 1, cls: 'mhb-leg' },
@@ -79,6 +80,29 @@
       ['Legendarne', 'ok. 0.3%']
     ],
     'Tytani': [['Brak danych', 'Brak pewnych danych']]
+  };
+
+  const ELITY_II_CHANCE_VARIANTS = {
+    standard: {
+      label: 'Standardowe Elity II',
+      rows: [['Brak łupu', '~50%'], ['Pospolite', '~39,94%'], ['Unikatowe', '~8%'], ['Heroiczne', '~2%'], ['Legendarne', '~0,06%']]
+    },
+    solo_maps: {
+      label: 'Mapy bez grupowania',
+      rows: [['Brak łupu', '~50%'], ['Pospolite', '~36,825%'], ['Unikatowe', '~10%'], ['Heroiczne', '~2,5%'], ['Legendarne', '~0,075%']]
+    },
+    shared_template: {
+      label: 'Współdzielony szablon',
+      rows: [['Brak łupu', '~60,58%'], ['Zwykłe', '~31,13%'], ['Unikatowe', '~6,62%'], ['Heroiczne', '~1,62%'], ['Legendarne', '~0,05%']]
+    },
+    mechanism_items: {
+      label: 'Przedmioty do mechanizmów',
+      rows: [['Brak łupu', '~50%'], ['Pospolite', '~20%'], ['Unikatowe', '~28% (w tym 20% na klucz)'], ['Heroiczne', '~2%']]
+    },
+    mechanism_mobs: {
+      label: 'Elity wywoływane mechanizmem',
+      rows: [['Brak łupu', '~49,7%'], ['Unikatowe', '~40%'], ['Heroiczne', '~10%'], ['Legendarne', '~0,3%']]
+    }
   };
 
   const HIDDEN_STAT_KEYS = new Set([
@@ -210,6 +234,8 @@
   const minimized = false;
   let panelVisible = loadJson(STORE_VISIBLE, false);
   let colorElements = loadJson(STORE_COLOR_ELEMENTS, false);
+  let e2ChanceVariant = loadJson(STORE_E2_CHANCE_VARIANT, 'standard');
+  if (!ELITY_II_CHANCE_VARIANTS[e2ChanceVariant]) e2ChanceVariant = 'standard';
 
   const css = `
     #mh-bestiary{position:fixed;top:80px;right:24px;width:470px;height:650px;min-width:340px;min-height:320px;max-width:96vw;max-height:96vh;z-index:2147483647;background:#0b0e10;color:#e7ecef;border:1px solid #2d6b56;border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.55);font:12px Arial,sans-serif;overflow:hidden}
@@ -276,6 +302,9 @@
     .mhb-location,.mhb-chances{border:1px solid #1f3032;border-radius:7px;background:#081012;padding:7px;color:#d9e4e0;line-height:16px;white-space:pre-wrap;max-height:130px;overflow:auto}
     .mhb-chance-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding:3px 0}
     .mhb-chance-row:last-child{border-bottom:0}
+    .mhb-chance-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:5px;font-weight:bold}
+    .mhb-chance-select{min-width:0;max-width:165px;height:26px;border:1px solid #2b4548;border-radius:5px;background:#10191b;color:#dff7ed;font-size:10px;padding:0 5px}
+    .mhb-chance-note{margin-top:5px;color:#82958f;font-size:9px;line-height:12px}
     .mhb-status{height:30px;border:1px solid #1f3032;border-radius:7px;background:#0d1717;color:#b8cac4;padding:7px 9px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
     .mhb-tip{position:fixed;z-index:2147483647;display:none;max-width:min(340px,calc(100vw - 24px));min-width:260px;background:rgba(3,5,4,.97);color:#eef2ef;border:2px solid #6d6d61;border-radius:2px;padding:5px;box-shadow:0 0 0 2px #111,0 10px 28px rgba(0,0,0,.8);pointer-events:none;font:12px Verdana,Arial,sans-serif;line-height:15px;white-space:normal;overflow-wrap:break-word}
     .mhb-tip-head{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;align-items:center;border:1px solid #3b443f;background:rgba(30,34,31,.72);padding:3px;margin-bottom:4px;min-height:44px}
@@ -1559,13 +1588,42 @@
         </div>
       </div>
 
+      ${renderDropChances(details)}
       <div class="mhb-section-title">Looty</div>
       ${groups.map(group => renderItemGroup(group)).join('') || '<div class="mhb-empty">Brak lootow na stronie.</div>'}
     `;
 
     document.getElementById('mhb-open').addEventListener('click', () => window.open(details.mob.url, '_blank'));
     document.getElementById('mhb-copy').addEventListener('click', () => copyText(details.name));
+    const chanceSelect = document.getElementById('mhb-e2-chance-variant');
+    if (chanceSelect) {
+      chanceSelect.addEventListener('change', e => {
+        e2ChanceVariant = ELITY_II_CHANCE_VARIANTS[e.target.value] ? e.target.value : 'standard';
+        saveJson(STORE_E2_CHANCE_VARIANT, e2ChanceVariant);
+        if (selectedDetails === details) renderDetails(details);
+      });
+    }
     bindItemTooltips(details);
+  }
+
+  function renderDropChances(details) {
+    if (!details || !details.mob || details.mob.category !== 'Elity II') return '';
+    const variant = ELITY_II_CHANCE_VARIANTS[e2ChanceVariant] || ELITY_II_CHANCE_VARIANTS.standard;
+    const options = Object.entries(ELITY_II_CHANCE_VARIANTS).map(([key, entry]) =>
+      `<option value="${esc(key)}"${key === e2ChanceVariant ? ' selected' : ''}>${esc(entry.label)}</option>`
+    ).join('');
+
+    return `
+      <div class="mhb-section-title">Przybliżone szanse na łup</div>
+      <div class="mhb-chances">
+        <div class="mhb-chance-head">
+          <span>Wariant:</span>
+          <select class="mhb-chance-select" id="mhb-e2-chance-variant">${options}</select>
+        </div>
+        ${variant.rows.map(row => `<div class="mhb-chance-row"><span>${esc(row[0])}</span><strong>${esc(row[1])}</strong></div>`).join('')}
+        <div class="mhb-chance-note">Wartości są przybliżone. Wybierz wariant odpowiadający mechanizmowi danej Elity II.</div>
+      </div>
+    `;
   }
 
   function groupItems(items) {
