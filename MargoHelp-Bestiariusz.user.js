@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podreczny v1.2
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.3
+// @version      1.4
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.3',
+    version: '1.4',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -305,6 +305,11 @@
     .mhb-chance-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:5px;font-weight:bold}
     .mhb-chance-select{min-width:0;max-width:165px;height:26px;border:1px solid #2b4548;border-radius:5px;background:#10191b;color:#dff7ed;font-size:10px;padding:0 5px}
     .mhb-chance-note{margin-top:5px;color:#82958f;font-size:9px;line-height:12px}
+    .mhb-section-title.mhb-title-row{display:flex;align-items:center;justify-content:space-between;overflow:visible}
+    .mhb-drop-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border:1px solid #3c8069;border-radius:50%;color:#7cffc2;background:#10211c;font-weight:bold;font-size:11px;cursor:help}
+    .mhb-drop-popover{display:none;position:absolute;z-index:20;right:-3px;top:22px;width:235px;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.98);box-shadow:0 8px 24px rgba(0,0,0,.75);color:#dce9e4;font-weight:normal;font-size:10px;line-height:14px}
+    .mhb-drop-help:hover .mhb-drop-popover,.mhb-drop-help:focus-within .mhb-drop-popover{display:block}
+    .mhb-drop-popover .mhb-chance-head{font-size:10px}
     .mhb-status{height:30px;border:1px solid #1f3032;border-radius:7px;background:#0d1717;color:#b8cac4;padding:7px 9px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
     .mhb-tip{position:fixed;z-index:2147483647;display:none;max-width:min(340px,calc(100vw - 24px));min-width:260px;background:rgba(3,5,4,.97);color:#eef2ef;border:2px solid #6d6d61;border-radius:2px;padding:5px;box-shadow:0 0 0 2px #111,0 10px 28px rgba(0,0,0,.8);pointer-events:none;font:12px Verdana,Arial,sans-serif;line-height:15px;white-space:normal;overflow-wrap:break-word}
     .mhb-tip-head{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;align-items:center;border:1px solid #3b443f;background:rgba(30,34,31,.72);padding:3px;margin-bottom:4px;min-height:44px}
@@ -1588,8 +1593,7 @@
         </div>
       </div>
 
-      ${renderDropChances(details)}
-      <div class="mhb-section-title">Looty</div>
+      <div class="mhb-section-title mhb-title-row"><span>Looty</span>${renderDropChanceHelp(details)}</div>
       ${groups.map(group => renderItemGroup(group)).join('') || '<div class="mhb-empty">Brak lootow na stronie.</div>'}
     `;
 
@@ -1606,7 +1610,7 @@
     bindItemTooltips(details);
   }
 
-  function renderDropChances(details) {
+  function renderDropChanceHelp(details) {
     if (!details || !details.mob || details.mob.category !== 'Elity II') return '';
     const variant = ELITY_II_CHANCE_VARIANTS[e2ChanceVariant] || ELITY_II_CHANCE_VARIANTS.standard;
     const options = Object.entries(ELITY_II_CHANCE_VARIANTS).map(([key, entry]) =>
@@ -1614,14 +1618,16 @@
     ).join('');
 
     return `
-      <div class="mhb-section-title">Przybliżone szanse na łup</div>
-      <div class="mhb-chances">
+      <div class="mhb-drop-help" tabindex="0" aria-label="Przybliżone szanse na łup">?
+        <div class="mhb-drop-popover">
+          <strong>Przybliżone szanse na łup</strong>
         <div class="mhb-chance-head">
           <span>Wariant:</span>
           <select class="mhb-chance-select" id="mhb-e2-chance-variant">${options}</select>
         </div>
         ${variant.rows.map(row => `<div class="mhb-chance-row"><span>${esc(row[0])}</span><strong>${esc(row[1])}</strong></div>`).join('')}
         <div class="mhb-chance-note">Wartości są przybliżone. Wybierz wariant odpowiadający mechanizmowi danej Elity II.</div>
+        </div>
       </div>
     `;
   }
