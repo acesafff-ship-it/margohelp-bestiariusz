@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.9.8.9
+// @version      1.9.9
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -32,7 +32,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.9.8.9',
+    version: '1.9.9',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -572,7 +572,7 @@
         url: href,
         name: meta.name || raw.replace(/Ilość lootów:.*/i, '').trim() || 'Potwor',
         level: meta.level,
-        prof: meta.prof,
+        prof: normalizeMobProf(meta.name, meta.prof),
         lootCount: meta.lootCount,
         category: tab.label,
         tabId: tab.id,
@@ -609,6 +609,12 @@
   function findImageNear(a) {
     const img = a.querySelector('img') || a.closest('li,div,article')?.querySelector('img');
     return img ? abs(img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-original') || '') : '';
+  }
+
+  function normalizeMobProf(name, prof) {
+    const value = clean(prof || '');
+    if (!value && norm(name) === norm('Kotołak Tropiciel')) return 'tropiciel';
+    return value;
   }
 
   function uniqueMobs(items) {
@@ -651,7 +657,7 @@
         <div class="mhb-imgbox">${mob.image ? `<img src="${esc(mob.image)}" alt="">` : '<span class="mhb-placeholder"></span>'}</div>
         <div>
           <div class="mhb-name">${esc(mob.name)}</div>
-          <div class="mhb-meta">${mob.level ? mob.level + ' lvl' : '? lvl'}${mob.prof ? ' | ' + esc(mob.prof) : ''}${mob.lootCount ? ' | ' + mob.lootCount + ' loot' : ''}</div>
+          <div class="mhb-meta">${mob.level ? mob.level + ' lvl' : '? lvl'}${mob.prof ? ' | ' + esc(mob.prof) : ''}</div>
         </div>
       </div>
     `;
