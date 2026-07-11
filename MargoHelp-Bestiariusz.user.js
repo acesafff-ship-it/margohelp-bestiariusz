@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podreczny v1.2
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.0
+// @version      1.1
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.0',
+    version: '1.1',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -1837,7 +1837,10 @@
     if (stats.reslight) add('reslight', colorStatValues(formatPercentPlusStat(STAT_LABELS.reslight, stats.reslight), 'light'), true);
     if (stats.act) add('act', colorStatValues(formatPercentPlusStat(STAT_LABELS.act, stats.act), 'poison'), true);
     if (stats.resdmg) add('resdmg', `Niszczenie odporności magicznych o <span class="mhb-tip-stat-value">${esc(stats.resdmg)}%</span> podczas ciosu`, true);
-    if (stats.respred) addPercent('respred', STAT_LABELS.respred, stats.respred);
+    if (stats.respred) {
+      const recovery = String(stats.respred).replace(/^\+/, '').replace(/%$/, '');
+      add('respred', `Przyśpiesza wracanie do siebie o <span class="mhb-tip-stat-value">${esc(recovery)}%</span>`, true);
+    }
 
     if (stats.crit) addPercent('crit', STAT_LABELS.crit, stats.crit);
     if (stats.critmval) addPercent('critmval', STAT_LABELS.critmval, stats.critmval);
