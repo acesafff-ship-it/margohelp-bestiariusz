@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.9
+// @version      1.9.1
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.9',
+    version: '1.9.1',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -2006,8 +2006,8 @@
     if (stats.heal) add('heal', `Przywraca <span class="mhb-tip-stat-value">${esc(stats.heal)}</span> ${pointWord(stats.heal)} życia podczas walki`, true);
     if (stats.afterheal) addPlain('afterheal', STAT_LABELS.afterheal, stats.afterheal);
     if (stats.leczy) addPlain('leczy', STAT_LABELS.leczy, stats.leczy);
-    if (stats.manafatig) addPlain('manafatig', STAT_LABELS.manafatig, stats.manafatig);
-    if (stats.enfatig) addPlain('enfatig', STAT_LABELS.enfatig, stats.enfatig);
+    if (stats.manafatig) add('manafatig', formatFatigueStat(stats.manafatig, 'many'), true);
+    if (stats.enfatig) add('enfatig', formatFatigueStat(stats.enfatig, 'energii'), true);
 
     if (stats.abs) addPlain('abs', STAT_LABELS.abs, stats.abs);
     if (stats.absorb) add('absorb', `Absorbuje do <span class="mhb-tip-stat-value">${esc(stats.absorb)}</span> obrażeń fizycznych`, true);
@@ -2107,6 +2107,20 @@
     }
 
     return formatPlusStat(STAT_LABELS.wound, text);
+  }
+
+  function formatFatigueStat(value, resource) {
+    const text = String(value || '').trim();
+    const parts = text.split(',').map(part => part.trim()).filter(Boolean);
+
+    if (parts.length === 2 && parts.every(part => /^[-+]?\d+(?:\.\d+)?$/.test(part))) {
+      const chance = String(parts[0]).replace(/^\+/, '').replace(/%$/, '');
+      const amount = String(parts[1]).replace(/^\+/, '');
+      return `<span class="mhb-tip-stat-value">+${esc(chance)}%</span> szans na utratę ` +
+        `<span class="mhb-tip-stat-value">${esc(amount)}</span> ${esc(resource)} przez przeciwnika podczas obrony`;
+    }
+
+    return formatPlainStat(resource === 'many' ? STAT_LABELS.manafatig : STAT_LABELS.enfatig, text);
   }
 
   function pointWord(value) {
