@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.5
+// @version      1.6
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.5',
+    version: '1.6',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -307,8 +307,8 @@
     .mhb-chance-note{margin-top:5px;color:#82958f;font-size:9px;line-height:12px}
     .mhb-section-title.mhb-title-row{display:flex;align-items:center;justify-content:space-between;overflow:visible}
     .mhb-drop-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border:1px solid #3c8069;border-radius:50%;color:#7cffc2;background:#10211c;font-weight:bold;font-size:11px;cursor:help}
-    .mhb-drop-popover{display:none;position:absolute;z-index:20;right:-3px;top:22px;width:235px;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.98);box-shadow:0 8px 24px rgba(0,0,0,.75);color:#dce9e4;font-weight:normal;font-size:10px;line-height:14px}
-    .mhb-drop-help:hover .mhb-drop-popover,.mhb-drop-help:focus-within .mhb-drop-popover{display:block}
+    .mhb-drop-popover{display:none;position:absolute;z-index:20;right:-3px;top:18px;width:235px;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.98);box-shadow:0 8px 24px rgba(0,0,0,.75);color:#dce9e4;font-weight:normal;font-size:10px;line-height:14px}
+    .mhb-drop-help:hover .mhb-drop-popover,.mhb-drop-help:focus-within .mhb-drop-popover,.mhb-drop-help.open .mhb-drop-popover{display:block}
     .mhb-drop-popover .mhb-chance-head{font-size:10px}
     .mhb-status{height:30px;border:1px solid #1f3032;border-radius:7px;background:#0d1717;color:#b8cac4;padding:7px 9px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
     .mhb-tip{position:fixed;z-index:2147483647;display:none;max-width:min(340px,calc(100vw - 24px));min-width:260px;background:rgba(3,5,4,.97);color:#eef2ef;border:2px solid #6d6d61;border-radius:2px;padding:5px;box-shadow:0 0 0 2px #111,0 10px 28px rgba(0,0,0,.8);pointer-events:none;font:12px Verdana,Arial,sans-serif;line-height:15px;white-space:normal;overflow-wrap:break-word}
@@ -1604,7 +1604,17 @@
       chanceSelect.addEventListener('change', e => {
         e2ChanceVariant = ELITY_II_CHANCE_VARIANTS[e.target.value] ? e.target.value : 'standard';
         saveJson(STORE_E2_CHANCE_VARIANT, e2ChanceVariant);
-        if (selectedDetails === details) renderDetails(details);
+        const rowsBox = document.getElementById('mhb-e2-chance-rows');
+        const variant = ELITY_II_CHANCE_VARIANTS[e2ChanceVariant];
+        if (rowsBox && variant) rowsBox.innerHTML = renderChanceRows(variant.rows);
+      });
+    }
+    const chanceHelp = document.querySelector('#mhb-details .mhb-drop-help');
+    if (chanceHelp) {
+      chanceHelp.addEventListener('click', e => {
+        if (e.target.closest('select, option')) return;
+        e.stopPropagation();
+        chanceHelp.classList.toggle('open');
       });
     }
     bindItemTooltips(details);
@@ -1625,11 +1635,15 @@
           <span>Wariant:</span>
           <select class="mhb-chance-select" id="mhb-e2-chance-variant">${options}</select>
         </div>
-        ${variant.rows.map(row => `<div class="mhb-chance-row"><span>${esc(row[0])}</span><strong>${esc(row[1])}</strong></div>`).join('')}
+        <div id="mhb-e2-chance-rows">${renderChanceRows(variant.rows)}</div>
         <div class="mhb-chance-note">Wartości są przybliżone. Wybierz wariant odpowiadający mechanizmowi danej Elity II.</div>
         </div>
       </div>
     `;
+  }
+
+  function renderChanceRows(rows) {
+    return (rows || []).map(row => `<div class="mhb-chance-row"><span>${esc(row[0])}</span><strong>${esc(row[1])}</strong></div>`).join('');
   }
 
   function groupItems(items) {
