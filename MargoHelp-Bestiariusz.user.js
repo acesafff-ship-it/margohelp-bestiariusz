@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.9.1
+// @version      1.9.8.2
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -13,6 +13,11 @@
 // @exclude      *://margonem.pl/*
 // @exclude      *://www.margonem.pl/*
 // @exclude      *://forum.margonem.pl/*
+// @exclude      *://pomoc.margonem.pl/*
+// @exclude      *://new.margonem.pl/*
+// @exclude      *://commons.margonem.pl/*
+// @exclude      *://dev-commons.margonem.pl/*
+// @exclude      *://public-api.margonem.pl/*
 // @run-at       document-idle
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
@@ -27,7 +32,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.9.1',
+    version: '1.9.8.2',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -44,8 +49,8 @@
   };
 
   const STORE_CACHE = 'mh_bestiary_v41_cache';
-  const STORE_ITEM_DATA = 'mh_bestiary_v428_item_data';
-  const STORE_MOB_DATA = 'mh_bestiary_v428_mob_data';
+  const STORE_ITEM_DATA = 'mh_bestiary_v195_item_data';
+  const STORE_MOB_DATA = 'mh_bestiary_v195_mob_data';
   const STORE_STAT_KEYS = 'mh_bestiary_v41_stat_keys';
   let statKeyMemory = loadJson(STORE_STAT_KEYS, {});
   const STORE_POS = 'mh_bestiary_v10_pos';
@@ -54,6 +59,8 @@
   const STORE_LAUNCHER_POS = 'mh_bestiary_v434_launcher_pos';
   const STORE_COLOR_ELEMENTS = 'mh_bestiary_v442_color_elements';
   const STORE_E2_CHANCE_VARIANT = 'mh_bestiary_v13_e2_chance_variant';
+  const STORE_LOOT_MULTIPLIER = 'mh_bestiary_v196_loot_multiplier';
+  const STORE_LOOT_BONUS = 'mh_bestiary_v196_loot_bonus';
 
   const RARITIES = {
     legendary: { label: 'Legendarne', order: 1, cls: 'mhb-leg' },
@@ -61,7 +68,8 @@
     unique: { label: 'Unikatowe', order: 3, cls: 'mhb-uni' },
     upgraded: { label: 'Ulepszone', order: 4, cls: 'mhb-upg' },
     common: { label: 'Pospolite', order: 8, cls: 'mhb-com' },
-    unknown: { label: 'Pozostale', order: 9, cls: 'mhb-unk' }
+    neutral: { label: 'Neutralne', order: 9, cls: 'mhb-neu' },
+    unknown: { label: 'Pozostale', order: 10, cls: 'mhb-unk' }
   };
 
   const DROP_CHANCES = {
@@ -239,7 +247,17 @@
     puncture: 'Cel ataku ma obniżone o 12% zdolności defensywne.'
   };
 
-  if (['margonem.pl', 'www.margonem.pl', 'forum.margonem.pl'].includes(location.hostname.toLowerCase())) return;
+  const NON_GAME_HOSTS = new Set([
+    'margonem.pl',
+    'www.margonem.pl',
+    'forum.margonem.pl',
+    'pomoc.margonem.pl',
+    'new.margonem.pl',
+    'commons.margonem.pl',
+    'dev-commons.margonem.pl',
+    'public-api.margonem.pl'
+  ]);
+  if (NON_GAME_HOSTS.has(location.hostname.toLowerCase())) return;
 
   if (document.getElementById('mh-bestiary')) return;
 
@@ -254,6 +272,8 @@
   let colorElements = loadJson(STORE_COLOR_ELEMENTS, false);
   let e2ChanceVariant = loadJson(STORE_E2_CHANCE_VARIANT, 'standard');
   if (!ELITY_II_CHANCE_VARIANTS[e2ChanceVariant]) e2ChanceVariant = 'standard';
+  let lootMultiplier = Math.round(clampNumber(loadJson(STORE_LOOT_MULTIPLIER, 1), 1, 5, 1));
+  let lootBonus = clampNumber(loadJson(STORE_LOOT_BONUS, 0), 0, 100, 0);
 
   const css = `
     #mh-bestiary{position:fixed;top:80px;right:24px;width:470px;height:650px;min-width:340px;min-height:320px;max-width:96vw;max-height:96vh;z-index:2147483647;background:#0b0e10;color:#e7ecef;border:1px solid #2d6b56;border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.55);font:12px Arial,sans-serif;overflow:hidden}
@@ -268,11 +288,14 @@
     .mhb-icon{width:26px;height:26px;border:1px solid #2c735b;border-radius:6px;background:#101b1d;color:#bfffe2;font-weight:bold;cursor:pointer}
     .mhb-head-btn{height:26px;border:1px solid #2c735b;border-radius:6px;background:#101b1d;color:#bfffe2;font-size:10px;font-weight:bold;cursor:pointer;padding:0 8px}
     .mhb-head-btn:hover,.mhb-icon:hover{border-color:#58e5a9}
+    .mhb-close-btn{width:26px;padding:0;font-size:14px;color:#ffb7b7;border-color:#714545}
+    .mhb-close-btn:hover{color:#fff;background:#6b2929;border-color:#ff7777}
     .mhb-body{height:calc(100% - 46px);display:flex;flex-direction:column;gap:8px;padding:9px;overflow:hidden}
     .mhb-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-    .mhb-options{display:none;align-items:center;padding:7px 9px;border:1px solid #26383a;border-radius:6px;background:#0b1315;color:#c9d6d2}
+    .mhb-options{display:none;align-items:center;flex-wrap:wrap;gap:8px 14px;padding:7px 9px;border:1px solid #26383a;border-radius:6px;background:#0b1315;color:#c9d6d2}
     .mhb-options.open{display:flex}
     .mhb-options label{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+    .mhb-option-number,.mhb-option-select{width:62px;height:25px;border:1px solid #2b4548;border-radius:5px;background:#071012;color:#e8f7f1;padding:0 5px}
     .mhb-tab{height:32px;border:1px solid #26383a;border-radius:6px;background:#11191b;color:#c9d6d2;font-weight:bold;cursor:pointer}
     .mhb-tab.active{border-color:#5df0ad;background:#173026;color:#74ffc0}
     .mhb-controls{display:grid;grid-template-columns:1fr 76px 76px;gap:6px}
@@ -316,6 +339,7 @@
     .mhb-uni{border-color:#ffe44d;box-shadow:inset 0 0 8px rgba(255,228,77,.13)}
     .mhb-upg{border-color:#a783ff}
     .mhb-com{border-color:#9da8aa}
+    .mhb-neu{border-color:#778783;box-shadow:inset 0 0 8px rgba(150,170,164,.1)}
     .mhb-unk{border-color:#344244}
     .mhb-location,.mhb-chances{border:1px solid #1f3032;border-radius:7px;background:#081012;padding:7px;color:#d9e4e0;line-height:16px;white-space:pre-wrap;max-height:130px;overflow:auto}
     .mhb-chance-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding:3px 0}
@@ -323,6 +347,7 @@
     .mhb-chance-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:5px;font-weight:bold}
     .mhb-chance-select{min-width:0;max-width:165px;height:26px;border:1px solid #2b4548;border-radius:5px;background:#10191b;color:#dff7ed;font-size:10px;padding:0 5px}
     .mhb-chance-note{margin-top:5px;color:#82958f;font-size:9px;line-height:12px}
+    .mhb-chance-adjusted{display:block;color:#70ffc0;font-size:9px;font-weight:normal;white-space:nowrap}
     .mhb-route{border:1px solid #29463d;border-radius:6px;background:#091310;padding:7px;margin-bottom:7px;color:#cfe0da;line-height:15px;max-height:125px;overflow:auto}
     .mhb-route-title{color:#74ffc0;font-weight:bold;margin-bottom:4px}
     .mhb-route-entry+.mhb-route-entry{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08)}
@@ -381,6 +406,7 @@
       <div class="mhb-head-actions">
         <button class="mhb-head-btn" id="mhb-clear-cache" title="Wyczysc pobrane dane">Wyczysc</button>
         <button class="mhb-head-btn" id="mhb-options-btn" title="Ustawienia dodatku">Opcje</button>
+        <button class="mhb-head-btn mhb-close-btn" id="mhb-close" title="Zamknij bestiariusz" aria-label="Zamknij bestiariusz">X</button>
       </div>
     </div>
     <div class="mhb-body">
@@ -389,6 +415,8 @@
       </div>
       <div class="mhb-options" id="mhb-options">
         <label><input type="checkbox" id="mhb-color-elements"> Koloruj wartości żywiołów i odporności</label>
+        <label>Mnożnik świata <select class="mhb-option-select" id="mhb-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label>
+        <label>Zmniejszenie braku łupu <input class="mhb-option-number" type="number" id="mhb-loot-bonus" min="0" max="100" step="1" inputmode="numeric">%</label>
       </div>
       <div class="mhb-controls">
         <input class="mhb-input" id="mhb-search" placeholder="Szukaj potwora">
@@ -450,10 +478,29 @@
       e.stopPropagation();
       document.getElementById('mhb-options').classList.toggle('open');
     });
+    document.getElementById('mhb-close').addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      panelVisible = false;
+      saveJson(STORE_VISIBLE, panelVisible);
+      applyPanelVisibility();
+    });
     document.getElementById('mhb-color-elements').addEventListener('change', e => {
       colorElements = !!e.target.checked;
       saveJson(STORE_COLOR_ELEMENTS, colorElements);
       applyPreferences();
+    });
+    document.getElementById('mhb-loot-multiplier').addEventListener('change', e => {
+      lootMultiplier = Math.round(clampNumber(e.target.value, 1, 5, 1));
+      saveJson(STORE_LOOT_MULTIPLIER, lootMultiplier);
+      applyPreferences();
+      if (selectedDetails) renderDetails(selectedDetails);
+    });
+    document.getElementById('mhb-loot-bonus').addEventListener('change', e => {
+      lootBonus = clampNumber(e.target.value, 0, 100, 0);
+      saveJson(STORE_LOOT_BONUS, lootBonus);
+      applyPreferences();
+      if (selectedDetails) renderDetails(selectedDetails);
     });
 
     enableDrag();
@@ -465,6 +512,10 @@
   function applyPreferences() {
     const checkbox = document.getElementById('mhb-color-elements');
     if (checkbox) checkbox.checked = !!colorElements;
+    const multiplierInput = document.getElementById('mhb-loot-multiplier');
+    if (multiplierInput) multiplierInput.value = String(lootMultiplier);
+    const bonusInput = document.getElementById('mhb-loot-bonus');
+    if (bonusInput) bonusInput.value = String(lootBonus);
     tooltip.classList.toggle('mhb-color-elements', !!colorElements);
   }
 
@@ -871,7 +922,8 @@
     if (stats) stats.type = itemClassType(stats._itemClass) || normalizeItemType(pageItemType || stats.type) || inferItemType(best || baseItem, h1 || baseItem.name, stats);
     const fallbackHtml = formatStats(stats) || best && best.fallbackHtml || baseItem.fallbackHtml;
 
-    const rarity = detectRarity([
+    const explicitRarity = detectRarity(stats && stats.rarity || best && best.rarity || '');
+    const inferredRarity = detectRarity([
       detectRarityFromRawHtml(rawHtml, baseItem),
       pageStats && pageStats.rarity,
       best && best.rarity,
@@ -883,6 +935,7 @@
       text,
       classText
     ].join(' '));
+    const rarity = explicitRarity !== 'unknown' ? explicitRarity : inferredRarity;
 
     return {
       id: best && best.id || baseItem.id,
@@ -1453,7 +1506,8 @@
     stats.type = itemClassType(stats._itemClass) || normalizeItemType(stats.type) || inferItemType({ name, img: src, imgFile: imageFile(src), href }, name, stats);
     if (!name && !src && !href) return null;
 
-    const rarity = detectRarity([
+    const explicitRarity = detectRarity(stats.rarity || dataItem.rarity || '');
+    const inferredRarity = detectRarity([
       stats.rarity,
       dataItem.rarity,
       dataItem.cl,
@@ -1464,6 +1518,7 @@
       img && img.className,
       el && el.className
     ].join(' '));
+    const rarity = explicitRarity !== 'unknown' ? explicitRarity : inferredRarity;
 
     return {
       id: extractItemId(href) || stats.id || dataItem.id || '',
@@ -1655,7 +1710,7 @@
           <div class="mhb-drop-popover">
             <strong>Przybliżone szanse na łup — ${esc(category)}</strong>
             <div id="mhb-chance-static-rows">${renderChanceRows(rows)}</div>
-            <div class="mhb-chance-note">${hasData ? 'Wartości są przybliżone i mogą różnić się zależnie od mechanizmu.' : 'Nie ma obecnie pewnych, publicznie potwierdzonych wartości dla tej kategorii.'}</div>
+            <div class="mhb-chance-note">${hasData ? 'Wartości są przybliżone i mogą różnić się zależnie od mechanizmu.' : 'Nie ma obecnie pewnych, publicznie potwierdzonych wartości dla tej kategorii.'}${renderLootFactorNote()}</div>
           </div>
         </div>
       `;
@@ -1674,14 +1729,68 @@
           <select class="mhb-chance-select" id="mhb-e2-chance-variant">${options}</select>
         </div>
         <div id="mhb-e2-chance-rows">${renderChanceRows(variant.rows)}</div>
-        <div class="mhb-chance-note">Wartości są przybliżone. Wybierz wariant odpowiadający mechanizmowi danej Elity II.</div>
+        <div class="mhb-chance-note">Wartości są przybliżone. Wybierz wariant odpowiadający mechanizmowi danej Elity II.${renderLootFactorNote()}</div>
         </div>
       </div>
     `;
   }
 
   function renderChanceRows(rows) {
-    return (rows || []).map(row => `<div class="mhb-chance-row"><span>${esc(row[0])}</span><strong>${esc(row[1])}</strong></div>`).join('');
+    const noLootRow = (rows || []).find(row => norm(row[0]).includes('brak lupu'));
+    const noLootChance = noLootRow ? firstPercentValue(noLootRow[1]) : null;
+    return (rows || []).map(row => {
+      const adjusted = adjustedChanceText(row[0], row[1], noLootChance);
+      return `<div class="mhb-chance-row"><span>${esc(row[0])}</span><span><strong>${esc(row[1])}</strong>${adjusted ? `<small class="mhb-chance-adjusted">Po bonusie: ${esc(adjusted)}</small>` : ''}</span></div>`;
+    }).join('');
+  }
+
+  function renderLootFactorNote() {
+    if (lootMultiplier === 1 && lootBonus === 0) return '';
+    return `<br>Przeliczenie: mnożnik świata ×${esc(lootMultiplier)}; zmniejszenie szansy na brak łupu: ${esc(lootBonus)}%.`;
+  }
+
+  function adjustedChanceText(label, rawChance, noLootChance) {
+    const isNoLoot = norm(label).includes('brak lupu');
+    if (noLootChance == null || noLootChance < 0 || noLootChance >= 100) return '';
+
+    // Ustawienie swiata dzieli wage pustego lupu, a nie jego procentowa szanse.
+    // Dla bazowej szansy E i mnoznika X nowa szansa wynosi:
+    // (E / X) / (1 - E + E / X).
+    const baseEmpty = noLootChance / 100;
+    const worldDenominator = 1 - baseEmpty + baseEmpty / lootMultiplier;
+    const worldEmpty = (baseEmpty / lootMultiplier) / worldDenominator;
+    const adjustedEmpty = worldEmpty * (1 - lootBonus / 100);
+
+    if (isNoLoot) {
+      if (lootMultiplier === 1 && lootBonus === 0) return '';
+      return formatChanceNumber(adjustedEmpty * 100) + '%';
+    }
+
+    // Pozostale wagi nie zmieniaja sie, wiec kazda niepusta zdobycz rosnie
+    // proporcjonalnie do zmiany lacznej szansy na niepusty lup.
+    const factor = (1 - adjustedEmpty) / (1 - baseEmpty);
+    if (Math.abs(factor - 1) < 0.000001) return '';
+    const raw = String(rawChance || '');
+    const values = Array.from(raw.matchAll(/(\d+(?:[.,]\d+)?)\s*%/g)).map(match => Number(match[1].replace(',', '.')));
+    if (!values.length) return '';
+    const adjusted = value => formatChanceNumber(Math.min(100, value * factor)) + '%';
+    const isRange = values.length > 1 && /%\s*[–—-]\s*\d/.test(raw);
+    return isRange ? adjusted(values[0]) + '–' + adjusted(values[1]) : adjusted(values[0]);
+  }
+
+  function firstPercentValue(rawChance) {
+    const match = String(rawChance || '').match(/(\d+(?:[.,]\d+)?)\s*%/);
+    return match ? Number(match[1].replace(',', '.')) : null;
+  }
+
+  function formatChanceNumber(value) {
+    return Number(value.toFixed(4)).toString().replace('.', ',');
+  }
+
+  function clampNumber(value, min, max, fallback) {
+    const parsed = Number(String(value).replace(',', '.'));
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(max, Math.max(min, parsed));
   }
 
   function renderE2Route(details) {
@@ -1704,24 +1813,24 @@
   function groupItems(items) {
     const map = new Map();
     items.forEach(item => {
-      const rarity = item.rarity || 'unknown';
-      if (!map.has(rarity)) {
-        map.set(rarity, { rarity, label: rarityInfo(rarity).label, items: [] });
+      const itemType = normalizeItemType(item.stats && item.stats.type || '');
+      const groupKey = itemType === 'Neutralne' ? 'neutral' : item.rarity || 'unknown';
+      if (!map.has(groupKey)) {
+        map.set(groupKey, { rarity: groupKey, label: rarityInfo(groupKey).label, items: [] });
       }
-      map.get(rarity).items.push(item);
+      map.get(groupKey).items.push(item);
     });
 
     return Array.from(map.values()).sort((a, b) => rarityInfo(a.rarity).order - rarityInfo(b.rarity).order);
   }
 
   function renderItemGroup(group) {
-    const info = rarityInfo(group.rarity);
     return `
       <div class="mhb-rarity">
         <h4><span>${esc(group.label)}</span><span>${group.items.length}</span></h4>
         <div class="mhb-loot">
           ${group.items.map((item, index) => `
-            <div class="mhb-item ${info.cls}" data-item="${esc(group.rarity + ':' + index)}" aria-label="${esc(item.name)}">
+            <div class="mhb-item ${rarityInfo(item.rarity || 'unknown').cls}" data-item="${esc(group.rarity + ':' + index)}" aria-label="${esc(item.name)}">
               ${item.img ? `<img src="${esc(item.img)}" alt="${esc(item.name)}">` : esc(item.name.slice(0, 2))}
             </div>
           `).join('')}
@@ -2015,7 +2124,10 @@
     if (stats.abdest) addPlain('abdest', STAT_LABELS.abdest, stats.abdest);
     if (stats.adest) addPlain('adest', STAT_LABELS.adest, stats.adest);
     if (stats.blok) addPlus('blok', STAT_LABELS.blok, stats.blok);
-    if (stats.contra) addPercent('contra', STAT_LABELS.contra, stats.contra);
+    if (stats.contra) {
+      const counterChance = String(stats.contra).replace(/^\+/, '').replace(/%$/, '');
+      add('contra', `<span class="mhb-tip-stat-value">+${esc(counterChance)}%</span> szans na kontrę po krytyku`, true);
+    }
     if (stats.pierce) addPercent('pierce', STAT_LABELS.pierce, stats.pierce);
     if (stats.pierceb) add('pierceb', `<span class="mhb-tip-stat-value">${esc(stats.pierceb)}%</span> szans na zablokowanie przebicia`, true);
     if (stats.slow) add('slow', `Obniża SA przeciwnika o <span class="mhb-tip-stat-value">${esc(formatHundredths(stats.slow))}</span>`, true);
