@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podreczny v1.2
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.1
+// @version      1.2
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.1',
+    version: '1.2',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
@@ -1829,7 +1829,7 @@
     if (stats.frost) add('frost', colorStatValues(formatFrostStat(stats.frost), 'frost'), true);
     if (stats.light) add('light', colorStatValues(formatPlusStat(STAT_LABELS.light, stats.light), 'light'), true);
     if (stats.poison) add('poison', colorStatValues(formatPoisonStat(stats.poison), 'poison'), true);
-    if (stats.wound) addPlus('wound', STAT_LABELS.wound, stats.wound);
+    if (stats.wound) add('wound', formatWoundStat(stats.wound), true);
 
     if (stats.resfire) add('resfire', colorStatValues(formatPercentPlusStat(STAT_LABELS.resfire, stats.resfire), 'fire'), true);
     if (stats.rescold) add('rescold', colorStatValues(formatPercentPlusStat(STAT_LABELS.rescold, stats.rescold), 'frost'), true);
@@ -1960,6 +1960,20 @@
     }
 
     return formatPlusStat(STAT_LABELS.frost, text);
+  }
+
+  function formatWoundStat(value) {
+    const text = String(value || '').trim();
+    const parts = text.split(',').map(part => part.trim()).filter(Boolean);
+
+    if (parts.length === 2 && parts.every(part => /^[-+]?\d+(?:\.\d+)?$/.test(part))) {
+      const chance = String(parts[0]).replace(/^\+/, '').replace(/%$/, '');
+      const damage = /^[+\-]/.test(parts[1]) ? parts[1] : '+' + parts[1];
+      return `Głęboka rana, <span class="mhb-tip-stat-value">${esc(chance)}%</span> szans na ` +
+        `<span class="mhb-tip-stat-value">${esc(damage)}</span> obrażeń`;
+    }
+
+    return formatPlusStat(STAT_LABELS.wound, text);
   }
 
   function pointWord(value) {
