@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         MargoHelp Bestiariusz Podreczny v1.2
+// @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      1.4
+// @version      1.5
 // @author       Król Yss
 // @description  Podreczny bestiariusz elit, elit II, herosow, kolosow i tytanow z lootami pobieranymi z MargoHelp.
 // @updateURL    https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js
@@ -27,7 +27,7 @@
   'use strict';
 
   const CFG = {
-    version: '1.4',
+    version: '1.5',
     base: 'https://margohelp.pl',
     cacheHours: 24,
     detailCacheHours: 72,
