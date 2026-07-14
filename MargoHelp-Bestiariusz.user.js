@@ -220,7 +220,7 @@
   launchIcon.src = LAUNCH_ICON;
   launchIcon.alt = 'B';
   launch.appendChild(launchIcon);
-  launch.title = 'Forumowe przedmioty potworów specjalnych';
+  launch.title = 'Bestiariusz';
   const savedLauncherPos = loadJson(STORE_LAUNCHER_POS, null);
   if (savedLauncherPos && Number.isFinite(savedLauncherPos.left) && Number.isFinite(savedLauncherPos.top)) {
     launch.style.right = 'auto';
@@ -232,7 +232,7 @@
   const panel = document.createElement('div');
   panel.id = 'ky-forum-e2';
   panel.innerHTML = `
-    <div class="kyf-head"><div><div class="kyf-title">FORUMOWE PRZEDMIOTY ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
+    <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><button class="kyf-tab" data-category="elites">Elity</button><button class="kyf-tab active" data-category="elites2">Elity II</button><button class="kyf-tab" data-category="heroes">Herosi</button><button class="kyf-tab" data-category="colossi">Kolosi</button><button class="kyf-tab" data-category="titans">Tytani</button></div>
       <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit ± <input type="number" id="kyf-level-range" min="0" max="100" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
