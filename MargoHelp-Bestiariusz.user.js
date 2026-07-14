@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.1.0
+// @version      2.1.1
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -60,8 +60,8 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SCRIPT_VERSION = '2.1.0';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-14T23:23:00+02:00').getTime();
+  const SCRIPT_VERSION = '2.1.1';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-14T23:54:00+02:00').getTime();
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_PANEL_POS = 'ky_forum_special_panel_pos_v1';
