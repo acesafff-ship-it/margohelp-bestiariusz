@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.1.1
+// @version      2.2.2
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -46,7 +46,7 @@
     heroes: {
       label: 'Herosi',
       source: 'https://forum.margonem.pl/?task=forum&show=posts&id=514740&ps=0',
-      cacheKey: 'ky_forum_heroes_items_v3'
+      cacheKey: 'ky_forum_heroes_items_v4'
     },
     colossi: {
       label: 'Kolosi',
@@ -60,8 +60,8 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SCRIPT_VERSION = '2.1.1';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-14T23:54:00+02:00').getTime();
+  const SCRIPT_VERSION = '2.2.2';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-15T00:33:00+02:00').getTime();
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_PANEL_POS = 'ky_forum_special_panel_pos_v1';
@@ -192,7 +192,7 @@
     colorElements: !!savedSettings.colorElements,
     lootMultiplier: Math.round(clampNumber(savedSettings.lootMultiplier, 1, 5, 1)),
     lootBonus: clampNumber(savedSettings.lootBonus, 0, 100, 0),
-    levelRange: Math.round(clampNumber(savedSettings.levelRange, 0, 100, 13)),
+    levelRange: Math.round(clampNumber(savedSettings.levelRange, 13, 50, 13)),
     e2Variant: E2_CHANCE_VARIANTS[savedSettings.e2Variant] ? savedSettings.e2Variant : 'standard'
   };
   cleanupObsoleteLocalCaches();
@@ -211,6 +211,37 @@
     .kyf-launch{padding:1px;overflow:hidden}.kyf-launch img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
     .kyf-head-actions{display:flex;gap:5px}.kyf-head .kyf-options-btn{width:auto;padding:0 8px;color:#caffea;border-color:#39745f;background:#10221c}.kyf-options{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:center;padding:7px;border:1px solid #29433e;border-radius:6px;background:#0d1716}.kyf-options.open{display:grid}.kyf-options label{display:flex;align-items:center;gap:5px;color:#b9c9c3;font-size:9px}.kyf-options select,.kyf-options input[type=number]{height:25px;border:1px solid #34564d;border-radius:4px;background:#050a0b;color:#eaf6f1;padding:0 5px}.kyf-options input[type=number]{width:52px}.kyf-range{color:#70cfa9}.kyf-selected{grid-template-columns:42px 1fr auto}.kyf-chance-wrap{position:relative;align-self:start}.kyf-chance-btn{width:23px;height:23px;border:1px solid #3c8069;border-radius:50%;background:#10211c;color:#7cffc2;font-weight:bold;cursor:pointer}.kyf-chance-popover{display:none;position:absolute;z-index:30;right:0;top:27px;width:280px;max-height:390px;overflow:auto;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.99);box-shadow:0 8px 24px #000;color:#dce9e4;font-size:10px;line-height:14px}.kyf-chance-wrap.open .kyf-chance-popover{display:block}.kyf-chance-title{font-weight:bold;color:#77ffc2;margin-bottom:5px}.kyf-chance-row{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid #172824}.kyf-chance-row span:last-child{text-align:right}.kyf-chance-adjusted{display:block;color:#70eeb1;font-size:9px}.kyf-chance-note{margin-top:6px;color:#8fa39b;font-size:9px;line-height:12px}.kyf-chance-select{width:100%;height:26px;margin:3px 0 6px;border:1px solid #34564d;border-radius:4px;background:#07100e;color:#e9f6f1}.kyf-tip.kyf-color-elements .kyf-element-fire{color:#ff5757}.kyf-tip.kyf-color-elements .kyf-element-frost{color:#62aaff}.kyf-tip.kyf-color-elements .kyf-element-light{color:#ffe34f}.kyf-tip.kyf-color-elements .kyf-element-poison{color:#52e86f}.kyf-launch{cursor:grab;user-select:none;touch-action:none}.kyf-launch.dragging{cursor:grabbing}
     .kyf-change-system{grid-column:1/-1;border-top:1px solid #29433e;padding-top:6px}.kyf-change-head{display:flex;align-items:center;justify-content:space-between;color:#72efba;font-size:10px;font-weight:bold}.kyf-change-head button{height:22px;padding:0 7px;border:1px solid #4f6a62;border-radius:4px;background:#111a18;color:#aebdb8;font-size:9px;cursor:pointer}.kyf-update-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 8px;margin:5px 0;color:#91a79f;font-size:9px}.kyf-update-time b{color:#c8d8d2}.kyf-script-update{grid-column:1/-1;color:#76dcb4}.kyf-change-log{max-height:135px;overflow:auto;border:1px solid #223a34;border-radius:4px;background:#07100e;scrollbar-width:thin}.kyf-change-empty{padding:7px;color:#778a84;font-size:9px}.kyf-change-entry{padding:6px;border-bottom:1px solid #172923;font-size:9px;line-height:12px}.kyf-change-entry:last-child{border-bottom:0}.kyf-change-entry-title{color:#6ff0b7;font-weight:bold}.kyf-change-entry-summary{color:#c3d2cd}.kyf-change-detail{color:#91a49e;padding-left:8px}.kyf-change-more{color:#6f837d;font-style:italic;padding-left:8px}
+
+    /* Motyw inspirowany klasycznym interfejsem Margonem */
+    #ky-forum-e2{background:#1a1917;color:#e6e0d2;border:3px ridge #8b806e;border-radius:3px;box-shadow:0 0 0 2px #17110d,0 13px 36px rgba(0,0,0,.9),inset 0 0 18px rgba(0,0,0,.65);font-family:Verdana,Arial,sans-serif}
+    #ky-forum-e2:after{content:"";position:absolute;inset:2px;z-index:20;border:1px solid rgba(218,194,143,.22);pointer-events:none}
+    .kyf-head{position:relative;z-index:21;height:47px;padding:7px 10px;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 3px),linear-gradient(180deg,#503a2e 0%,#35251d 48%,#211711 51%,#2f211a 100%);border-bottom:3px ridge #877965;box-shadow:inset 0 1px #8b6b50,inset 0 -1px #100b08}
+    .kyf-title{color:#f2d681;font-size:14px;letter-spacing:.4px;text-shadow:1px 1px #1b1008,0 0 5px rgba(255,210,100,.25)}
+    .kyf-sub{color:#b9aa91;text-shadow:1px 1px #17100c}.kyf-sub a{color:#dbc27b}.kyf-sub a:hover{color:#fff0aa}
+    .kyf-body{height:calc(100% - 47px);padding:8px;gap:6px;background:radial-gradient(circle at 50% 0,rgba(119,98,67,.12),transparent 40%),linear-gradient(135deg,rgba(255,255,255,.012) 25%,transparent 25%) 0 0/5px 5px,#181817}
+    .kyf-head button,.kyf-btn,.kyf-tab,.kyf-change-head button{border:2px ridge #776d5e;border-radius:3px;background:linear-gradient(#494a44,#262724 52%,#1b1c1a 53%,#30312d);color:#e5dfd1;text-shadow:1px 1px #111;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);font-family:Verdana,Arial,sans-serif}
+    .kyf-head button:hover,.kyf-btn:hover,.kyf-tab:hover,.kyf-change-head button:hover{filter:brightness(1.18);color:#fff4c6}
+    .kyf-head .kyf-options-btn{color:#e8dfc9;border-color:#817665;background:linear-gradient(#55534a,#292a26 52%,#1d1e1b 53%,#34342f)}
+    .kyf-head #kyf-close{color:#ffc2b4;border-color:#8d635b;background:linear-gradient(#61372f,#321c18 52%,#251310 53%,#49251f)}
+    .kyf-tabs{gap:5px}.kyf-tab{height:30px;color:#bdb8ac}.kyf-tab.active{border-color:#7c916d;background:linear-gradient(#47613c,#24391f 52%,#182b16 53%,#314d29);color:#e4f5bf;box-shadow:inset 0 0 7px rgba(114,171,77,.35);text-shadow:1px 1px #10200d}
+    .kyf-input,.kyf-options select,.kyf-options input[type=number],.kyf-chance-select{border:2px inset #70695d;border-radius:2px;background:#111211;color:#eee9dc;box-shadow:inset 0 2px 6px #000;font-family:Verdana,Arial,sans-serif}.kyf-input:focus,.kyf-options input:focus,.kyf-options select:focus{outline:1px solid #98855e}
+    .kyf-main{gap:8px}.kyf-list,.kyf-items{border:2px inset #6e685d;border-radius:2px;background:#111211;box-shadow:inset 0 0 12px #000;scrollbar-color:#665d50 #181715}
+    .kyf-count{padding:6px;background:linear-gradient(#35342f,#24231f);border-bottom:2px ridge #665e51;color:#c5bcaa;text-shadow:1px 1px #111}
+    .kyf-mob{border-bottom:1px solid #37352f;background:linear-gradient(90deg,rgba(255,255,255,.018),transparent);transition:background .08s,color .08s}.kyf-mob:hover{background:#2a2924}.kyf-mob.active{background:linear-gradient(90deg,#34452d,#202c1d);color:#eff5cf;box-shadow:inset 3px 0 #78975e,inset 0 1px rgba(255,255,255,.05)}
+    .kyf-mob-name{color:#ece5d6;text-shadow:1px 1px #090909}.kyf-mob.active .kyf-mob-name{color:#f5e69a}.kyf-meta{color:#a9a394}.kyf-range{color:#91bd76}
+    .kyf-mob-image,.kyf-selected-image{border:2px ridge #655f55;border-radius:2px;background:#171715;box-shadow:inset 0 0 5px #000}
+    .kyf-items{padding:0 6px 6px}.kyf-selected{top:0;z-index:12;margin:0 -6px 6px;isolation:isolate;background:linear-gradient(#37352f,#24231f);border-bottom:2px ridge #6b6254;box-shadow:0 2px 5px #000}.kyf-selected-name{color:#f1df9c;text-shadow:1px 1px #111}
+    .kyf-group{border:2px ridge #575249;border-radius:2px;background:#121311;box-shadow:0 1px 3px #000}.kyf-group h4{padding:6px 7px;background:linear-gradient(#34332f,#23231f 52%,#1b1b19 53%,#292925);border-bottom:1px solid #0b0b0a;text-shadow:1px 1px #090909}.kyf-group h4:hover{background:linear-gradient(#44413a,#2c2b27)}.kyf-collapse-marker{color:#c3ad72}
+    .kyf-grid{gap:6px;padding:7px;background:radial-gradient(circle at top,rgba(122,105,74,.06),transparent 55%),#111210}.kyf-item{height:40px;border-width:2px;border-radius:3px;background:linear-gradient(145deg,#20211e,#0c0d0c 65%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 1px 2px #000}.kyf-item:hover{filter:brightness(1.22);box-shadow:0 0 5px var(--rarity),inset 0 0 0 1px rgba(255,255,255,.08)}
+    .kyf-route-body{background:#161714;color:#d2cbbb}.kyf-route-group h4{color:#d8bd72}
+    .kyf-source{border:2px inset #655f54;border-radius:2px;background:linear-gradient(#282722,#191917);color:#afa895}.kyf-source a{color:#d4b965}
+    .kyf-options{border:2px ridge #655d50;border-radius:2px;background:linear-gradient(#302b25,#191715);box-shadow:inset 0 0 9px #090706}.kyf-options label{color:#d0c7b6}
+    .kyf-change-system{border-top:2px ridge #665e51}.kyf-change-head{color:#e1c878}.kyf-update-times{color:#afa797}.kyf-update-time b{color:#ddd4c3}.kyf-script-update{color:#cbb36d}.kyf-change-log{border:2px inset #625c52;border-radius:2px;background:#121311}.kyf-change-entry{border-bottom:1px solid #37342e}.kyf-change-entry-title{color:#dfc36d}.kyf-change-entry-summary{color:#d2cbbb}.kyf-change-detail{color:#aaa392}
+    .kyf-chance-btn{border:2px ridge #867a65;background:linear-gradient(#4f5945,#273223);color:#f1df91;box-shadow:inset 0 0 4px rgba(255,255,255,.12)}.kyf-chance-popover{border:3px ridge #8a7d68;border-radius:2px;background:#171816;color:#e5dfd1;box-shadow:0 8px 24px #000,inset 0 0 10px #000}.kyf-chance-title{color:#e2c66e}.kyf-chance-row{border-bottom:1px solid #3a3730}.kyf-chance-note{color:#aaa292}
+    .kyf-tip{padding:7px;border-width:2px;background:rgba(18,18,16,.98);color:#eee9dc;box-shadow:0 8px 25px #000,inset 0 0 12px #000}.kyf-tip-head{border:2px ridge #625c52;background:linear-gradient(#33332f,#20211e)}.kyf-opis{color:#bdb6a7}.kyf-bind{border-color:#4d493f}
+    .kyf-launch{border:3px ridge #93866f;border-radius:4px;background:linear-gradient(#46352a,#211912);box-shadow:0 0 0 2px #17110d,0 3px 8px #000}.kyf-launch:hover{filter:brightness(1.12)}
+    #ky-forum-e2 ::-webkit-scrollbar{width:10px;height:10px}#ky-forum-e2 ::-webkit-scrollbar-track{background:#171614;border-left:1px solid #3b3832}#ky-forum-e2 ::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#403c35,#746a5a,#403c35);border:1px solid #1a1815;border-radius:1px}#ky-forum-e2 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(90deg,#514b41,#8a7c67,#514b41)}
+
   `;
   document.head.appendChild(style);
 
@@ -235,7 +266,7 @@
     <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><button class="kyf-tab" data-category="elites">Elity</button><button class="kyf-tab active" data-category="elites2">Elity II</button><button class="kyf-tab" data-category="heroes">Herosi</button><button class="kyf-tab" data-category="colossi">Kolosi</button><button class="kyf-tab" data-category="titans">Tytani</button></div>
-      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit ± <input type="number" id="kyf-level-range" min="0" max="100" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
+      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit i Herosów ± <input type="number" id="kyf-level-range" min="13" max="50" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
       <div class="kyf-tools"><input class="kyf-input" id="kyf-search" placeholder="Szukaj elity lub przedmiotu"><button class="kyf-btn" id="kyf-refresh">Odśwież forum</button></div>
       <div class="kyf-main"><div class="kyf-list" id="kyf-list"></div><div class="kyf-items" id="kyf-items"><div class="kyf-empty">Pobieram dane z forum…</div></div></div>
       <div class="kyf-source" id="kyf-status"></div>
@@ -286,7 +317,7 @@
     renderItems();
   });
   panel.querySelector('#kyf-level-range').addEventListener('change', event => {
-    preferences.levelRange = Math.round(clampNumber(event.target.value, 0, 100, 13));
+    preferences.levelRange = Math.round(clampNumber(event.target.value, 13, 50, 13));
     event.target.value = String(preferences.levelRange);
     savePreferences();
     renderList();
@@ -598,7 +629,7 @@
     [
       'ky_forum_elites_items_v1',
       'ky_forum_e2_items_v1', 'ky_forum_e2_items_v2',
-      'ky_forum_heroes_items_v1', 'ky_forum_heroes_items_v2',
+      'ky_forum_heroes_items_v1', 'ky_forum_heroes_items_v2', 'ky_forum_heroes_items_v3',
       'ky_forum_colossi_items_v1', 'ky_forum_colossi_items_v2',
       'ky_forum_titans_items_v1', 'ky_forum_titans_items_v2'
     ].forEach(key => {
@@ -648,7 +679,7 @@
         const legendaryChestChance = chestChanceMatch ? chestChanceMatch[1].replace('.', ',') + '%' : '';
         const mapAccessRange = parseMapAccessRange(body) || MAP_ACCESS_RANGES[normalize(section.name)] || '';
         const route = parseRoute(body);
-        const chestMarker = body.search(/Przedmioty do zdobycia ze skrzyni/i);
+        const chestMarker = body.search(/Przedmioty\s+do\s+zdobycia\s+ze\s+skrz/i);
         const regularItems = parseItems(chestMarker >= 0 ? body.slice(0, chestMarker) : body, 'regular');
         const chestItems = chestMarker >= 0 ? parseItems(body.slice(chestMarker), 'chest') : [];
         const items = regularItems.concat(chestItems);
@@ -728,7 +759,8 @@
     const groups = new Map();
     items.forEach(item => {
       const source = activeCategory === 'heroes' && item.lootSource === 'chest' ? 'chest' : 'regular';
-      const key = source + ':' + item.rarity;
+      const isNeutralHeroLoot = activeCategory === 'heroes' && source === 'regular' && Number(item.itemClass) === 15;
+      const key = isNeutralHeroLoot ? 'regular:neutral' : source + ':' + item.rarity;
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(item);
     });
@@ -736,7 +768,7 @@
       const group = lootGroupInfo(key);
       const collapseKey = activeCategory + '|' + key;
       const collapsed = !!collapsedGroups[collapseKey];
-      return `<div class="kyf-group${collapsed ? ' collapsed' : ''}" data-collapse-key="${escapeHtml(collapseKey)}"><h4 style="color:${group.color}" aria-expanded="${collapsed ? 'false' : 'true'}"><span><span class="kyf-collapse-marker">${collapsed ? '▶' : '▼'}</span>${escapeHtml(group.label)}</span><span>${list.length}</span></h4><div class="kyf-grid">${list.map((item, index) => `<div class="kyf-item" style="--rarity:${group.color}" data-key="${escapeHtml(key + ':' + index)}">${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : escapeHtml(item.name.slice(0, 2))}</div>`).join('')}</div></div>`;
+      return `<div class="kyf-group${collapsed ? ' collapsed' : ''}" data-collapse-key="${escapeHtml(collapseKey)}"><h4 style="color:${group.color}" aria-expanded="${collapsed ? 'false' : 'true'}"><span><span class="kyf-collapse-marker">${collapsed ? '▶' : '▼'}</span>${escapeHtml(group.label)}</span><span>${list.length}</span></h4><div class="kyf-grid">${list.map((item, index) => `<div class="kyf-item" style="--rarity:${rarity(item.rarity).color}" data-key="${escapeHtml(key + ':' + index)}">${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : escapeHtml(item.name.slice(0, 2))}</div>`).join('')}</div></div>`;
     }).join('');
     const routeHtml = renderRouteSection(activeCategory, selectedMob);
     box.innerHTML = `<div class="kyf-selected"><div class="kyf-selected-image">${selectedMob.image ? `<img src="${escapeHtml(selectedMob.image)}" alt="">` : '?'}</div><div><div class="kyf-selected-name">${escapeHtml(selectedMob.name)}</div><div class="kyf-meta">${selectedMob.level} lvl | ${escapeHtml(selectedMob.profile || 'brak profesji')}</div>${monsterRangeLine(activeCategory, selectedMob)}</div><div class="kyf-chance-wrap"><button class="kyf-chance-btn" title="Przybliżone szanse na łup">?</button><div class="kyf-chance-popover">${renderDropChancePopover(activeCategory, selectedMob)}</div></div></div>${routeHtml}${groupsHtml}`;
@@ -952,7 +984,7 @@
 
   function monsterRangeLine(category, mob) {
     let text = '';
-    if (category === 'elites' || category === 'elites2') text = combatRangeText(mob.level);
+    if (category === 'elites' || category === 'elites2' || category === 'heroes') text = combatRangeText(mob.level);
     else if ((category === 'colossi' || category === 'titans') && mob.mapAccessRange) text = `Wejście na mapę: ${mob.mapAccessRange}`;
     return text ? `<div class="kyf-meta kyf-range">${escapeHtml(text)}</div>` : '';
   }
@@ -969,6 +1001,7 @@
   function formatDescription(value) { return escapeHtml(String(value).replace(/\[br\]/gi, '\n').replace(/\[\/?(?:i|b|u)\]/gi, '')).replace(/\n/g, '<br>'); }
   function rarity(key) { return RARITY[key] || RARITY.unknown; }
   function lootGroupInfo(key) {
+    if (String(key) === 'regular:neutral') return { color: '#9da8aa', label: 'Neutralne', order: 1.5 };
     const chest = String(key).startsWith('chest:');
     const rarityKey = String(key).replace(/^(?:regular|chest):/, '');
     const info = rarity(rarityKey);
