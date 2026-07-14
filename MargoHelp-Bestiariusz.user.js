@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.0.3
+// @version      2.1.0
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -29,6 +29,8 @@
 
   if (window.__KROL_YSS_FORUM_ELITE_ITEMS__) return;
   window.__KROL_YSS_FORUM_ELITE_ITEMS__ = true;
+
+  const LAUNCH_ICON = 'data:image/png;base64,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';
 
   const CATEGORIES = {
     elites: {
@@ -58,10 +60,13 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
+  const SCRIPT_VERSION = '2.1.0';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-14T23:23:00+02:00').getTime();
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_PANEL_POS = 'ky_forum_special_panel_pos_v1';
   const STORE_COLLAPSED_GROUPS = 'ky_forum_special_collapsed_groups_v1';
+  const STORE_CHANGE_LOG = 'ky_forum_special_change_log_v1';
   const DROP_CHANCES = {
     elites: {
       label: 'Elity',
@@ -172,8 +177,14 @@
 
   const databases = { elites: [], elites2: [], heroes: [], colossi: [], titans: [] };
   const selectedMobs = { elites: null, elites2: null, heroes: null, colossi: null, titans: null };
+  const categoryUpdatedAt = { elites: 0, elites2: 0, heroes: 0, colossi: 0, titans: 0 };
   let activeCategory = 'elites2';
   let filter = '';
+  let changeLog = loadChangeLog();
+  Object.keys(categoryUpdatedAt).forEach(category => {
+    const lastEntry = changeLog.find(entry => entry && entry.category === category && Number(entry.timestamp));
+    if (lastEntry) categoryUpdatedAt[category] = Number(lastEntry.timestamp);
+  });
   const savedSettings = loadJson(STORE_SETTINGS, {});
   const savedCollapsedGroups = loadJson(STORE_COLLAPSED_GROUPS, {});
   const collapsedGroups = savedCollapsedGroups && typeof savedCollapsedGroups === 'object' && !Array.isArray(savedCollapsedGroups) ? savedCollapsedGroups : {};
@@ -185,6 +196,10 @@
     e2Variant: E2_CHANCE_VARIANTS[savedSettings.e2Variant] ? savedSettings.e2Variant : 'standard'
   };
   cleanupObsoleteLocalCaches();
+  Object.keys(categoryUpdatedAt).forEach(category => {
+    const cached = loadCache(category);
+    if (cached && Number(cached.savedAt) > categoryUpdatedAt[category]) categoryUpdatedAt[category] = Number(cached.savedAt);
+  });
 
   const style = document.createElement('style');
   style.textContent = `
@@ -193,13 +208,18 @@
     .kyf-body{height:calc(100% - 45px);display:flex;flex-direction:column;padding:7px;gap:6px}.kyf-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.kyf-tab{height:29px;padding:0 3px;border:1px solid #29433e;border-radius:5px;background:#0c1515;color:#9db1aa;font-size:10px;font-weight:bold;cursor:pointer}.kyf-tab.active{border-color:#50d69f;background:#123328;color:#7cffc4}.kyf-tools{display:grid;grid-template-columns:1fr auto;gap:5px}.kyf-input{height:29px;border:1px solid #29433e;border-radius:5px;background:#050a0b;color:#eef8f4;padding:0 8px;outline:none}.kyf-main{display:grid;grid-template-columns:205px 1fr;gap:7px;min-height:0;flex:1}.kyf-list,.kyf-items{min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid #203531;border-radius:6px;background:#05090a;scrollbar-width:thin}.kyf-count{position:sticky;top:0;z-index:3;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531;color:#8fa79f;font-size:9px}.kyf-mob{min-height:45px;padding:4px;display:grid;grid-template-columns:38px 1fr;gap:5px;align-items:center;border-bottom:1px solid #172522;cursor:pointer}.kyf-mob:hover{background:#101b19}.kyf-mob.active{background:#17362b;color:#75ffc0}.kyf-mob-image,.kyf-selected-image{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #263a36;border-radius:4px;background:#0c1211;overflow:hidden}.kyf-mob-image img,.kyf-selected-image img{max-width:36px;max-height:36px}.kyf-mob-name{font-weight:bold}.kyf-meta{margin-top:1px;color:#8c9f99;font-size:9px}.kyf-items{padding:6px}.kyf-selected{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:42px 1fr;gap:6px;align-items:center;margin:-6px -6px 6px;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531}.kyf-selected-name{font-weight:bold;color:#dff9ee}.kyf-empty{padding:10px;color:#8c9e98;line-height:14px}.kyf-source{border:1px solid #203531;border-radius:5px;background:#0d1616;padding:5px 6px;color:#91a69f;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kyf-source a{color:#64eeb2}
     .kyf-group{margin-bottom:5px;border:1px solid #233733;border-radius:6px;overflow:hidden}.kyf-group h4{margin:0;padding:5px 6px;background:#101919;display:flex;justify-content:space-between;font-size:10px;cursor:pointer;user-select:none}.kyf-group h4:hover{background:#152421}.kyf-collapse-marker{display:inline-block;width:12px;color:#7fa69a}.kyf-group.collapsed .kyf-grid{display:none}.kyf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(39px,1fr));gap:5px;padding:6px}.kyf-item{height:39px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rarity);border-radius:5px;background:#050707;cursor:help;position:relative}.kyf-item img{max-width:35px;max-height:35px}.kyf-tip{position:fixed;z-index:2147483647;display:none;width:320px;max-height:80vh;overflow:auto;padding:6px;border:2px solid var(--rarity);background:rgba(3,5,4,.98);color:#edf3ef;box-shadow:0 8px 25px #000;pointer-events:none;font:11px/14px Verdana,Arial,sans-serif}.kyf-tip-head{display:grid;grid-template-columns:38px 1fr;gap:7px;align-items:center;padding:4px;border:1px solid #35443f;background:#151a18;margin-bottom:5px}.kyf-tip-head img{max-width:35px;max-height:35px}.kyf-tip-name{font-weight:bold;color:var(--rarity)}.kyf-tip-rarity{font-weight:bold;color:var(--rarity);border-bottom:1px solid var(--rarity);padding-bottom:3px;margin-bottom:3px}.kyf-stat{padding:1px 0}.kyf-stat b{color:#ffb52e}.kyf-legbon{color:#58ef70;font-weight:bold;margin-top:4px;padding-top:3px;border-top:1px solid #3b4641}.kyf-legbon-desc{color:#58ef70;padding:1px 0 4px;border-bottom:1px solid #3b4641}.kyf-opis{color:#aeb9b4;margin-top:4px;padding:4px 0;border-bottom:1px solid #3b4641}.kyf-bind{margin-top:5px;padding-bottom:4px;border-bottom:1px solid #3b4641}.kyf-footer{padding-top:4px}.kyf-footer .kyf-stat{font-weight:bold}.kyf-launch{position:fixed;right:8px;top:75px;z-index:2147483644;width:39px;height:39px;border:2px solid #4c7869;border-radius:6px;background:#081512;color:#72ffc2;font:bold 12px Arial;cursor:pointer;box-shadow:0 0 0 2px #050807}
     .kyf-route-group h4{color:#77e8bd}.kyf-route-body{padding:6px;color:#c7d8d2;font-size:10px;line-height:14px;background:#08100f}.kyf-route-missing{color:#81958e;font-style:italic}.kyf-group.collapsed .kyf-route-body{display:none}
+    .kyf-launch{padding:1px;overflow:hidden}.kyf-launch img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
     .kyf-head-actions{display:flex;gap:5px}.kyf-head .kyf-options-btn{width:auto;padding:0 8px;color:#caffea;border-color:#39745f;background:#10221c}.kyf-options{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:center;padding:7px;border:1px solid #29433e;border-radius:6px;background:#0d1716}.kyf-options.open{display:grid}.kyf-options label{display:flex;align-items:center;gap:5px;color:#b9c9c3;font-size:9px}.kyf-options select,.kyf-options input[type=number]{height:25px;border:1px solid #34564d;border-radius:4px;background:#050a0b;color:#eaf6f1;padding:0 5px}.kyf-options input[type=number]{width:52px}.kyf-range{color:#70cfa9}.kyf-selected{grid-template-columns:42px 1fr auto}.kyf-chance-wrap{position:relative;align-self:start}.kyf-chance-btn{width:23px;height:23px;border:1px solid #3c8069;border-radius:50%;background:#10211c;color:#7cffc2;font-weight:bold;cursor:pointer}.kyf-chance-popover{display:none;position:absolute;z-index:30;right:0;top:27px;width:280px;max-height:390px;overflow:auto;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.99);box-shadow:0 8px 24px #000;color:#dce9e4;font-size:10px;line-height:14px}.kyf-chance-wrap.open .kyf-chance-popover{display:block}.kyf-chance-title{font-weight:bold;color:#77ffc2;margin-bottom:5px}.kyf-chance-row{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid #172824}.kyf-chance-row span:last-child{text-align:right}.kyf-chance-adjusted{display:block;color:#70eeb1;font-size:9px}.kyf-chance-note{margin-top:6px;color:#8fa39b;font-size:9px;line-height:12px}.kyf-chance-select{width:100%;height:26px;margin:3px 0 6px;border:1px solid #34564d;border-radius:4px;background:#07100e;color:#e9f6f1}.kyf-tip.kyf-color-elements .kyf-element-fire{color:#ff5757}.kyf-tip.kyf-color-elements .kyf-element-frost{color:#62aaff}.kyf-tip.kyf-color-elements .kyf-element-light{color:#ffe34f}.kyf-tip.kyf-color-elements .kyf-element-poison{color:#52e86f}.kyf-launch{cursor:grab;user-select:none;touch-action:none}.kyf-launch.dragging{cursor:grabbing}
+    .kyf-change-system{grid-column:1/-1;border-top:1px solid #29433e;padding-top:6px}.kyf-change-head{display:flex;align-items:center;justify-content:space-between;color:#72efba;font-size:10px;font-weight:bold}.kyf-change-head button{height:22px;padding:0 7px;border:1px solid #4f6a62;border-radius:4px;background:#111a18;color:#aebdb8;font-size:9px;cursor:pointer}.kyf-update-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 8px;margin:5px 0;color:#91a79f;font-size:9px}.kyf-update-time b{color:#c8d8d2}.kyf-script-update{grid-column:1/-1;color:#76dcb4}.kyf-change-log{max-height:135px;overflow:auto;border:1px solid #223a34;border-radius:4px;background:#07100e;scrollbar-width:thin}.kyf-change-empty{padding:7px;color:#778a84;font-size:9px}.kyf-change-entry{padding:6px;border-bottom:1px solid #172923;font-size:9px;line-height:12px}.kyf-change-entry:last-child{border-bottom:0}.kyf-change-entry-title{color:#6ff0b7;font-weight:bold}.kyf-change-entry-summary{color:#c3d2cd}.kyf-change-detail{color:#91a49e;padding-left:8px}.kyf-change-more{color:#6f837d;font-style:italic;padding-left:8px}
   `;
   document.head.appendChild(style);
 
   const launch = document.createElement('button');
   launch.className = 'kyf-launch';
-  launch.textContent = 'FE';
+  const launchIcon = document.createElement('img');
+  launchIcon.src = LAUNCH_ICON;
+  launchIcon.alt = 'B';
+  launch.appendChild(launchIcon);
   launch.title = 'Forumowe przedmioty potworów specjalnych';
   const savedLauncherPos = loadJson(STORE_LAUNCHER_POS, null);
   if (savedLauncherPos && Number.isFinite(savedLauncherPos.left) && Number.isFinite(savedLauncherPos.top)) {
@@ -212,10 +232,10 @@
   const panel = document.createElement('div');
   panel.id = 'ky-forum-e2';
   panel.innerHTML = `
-    <div class="kyf-head"><div><div class="kyf-title">FORUMOWE PRZEDMIOTY 2.0</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani • v2.0.3</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
+    <div class="kyf-head"><div><div class="kyf-title">FORUMOWE PRZEDMIOTY ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><button class="kyf-tab" data-category="elites">Elity</button><button class="kyf-tab active" data-category="elites2">Elity II</button><button class="kyf-tab" data-category="heroes">Herosi</button><button class="kyf-tab" data-category="colossi">Kolosi</button><button class="kyf-tab" data-category="titans">Tytani</button></div>
-      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit ± <input type="number" id="kyf-level-range" min="0" max="100" step="1"> lvl</label></div>
+      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit ± <input type="number" id="kyf-level-range" min="0" max="100" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
       <div class="kyf-tools"><input class="kyf-input" id="kyf-search" placeholder="Szukaj elity lub przedmiotu"><button class="kyf-btn" id="kyf-refresh">Odśwież forum</button></div>
       <div class="kyf-main"><div class="kyf-list" id="kyf-list"></div><div class="kyf-items" id="kyf-items"><div class="kyf-empty">Pobieram dane z forum…</div></div></div>
       <div class="kyf-source" id="kyf-status"></div>
@@ -243,6 +263,11 @@
   panel.querySelector('#kyf-loot-multiplier').value = String(preferences.lootMultiplier);
   panel.querySelector('#kyf-loot-bonus').value = String(preferences.lootBonus);
   panel.querySelector('#kyf-level-range').value = String(preferences.levelRange);
+  panel.querySelector('#kyf-clear-history').addEventListener('click', () => {
+    changeLog = [];
+    saveChangeLog();
+    renderChangeSystem();
+  });
   panel.querySelector('#kyf-color-elements').addEventListener('change', event => {
     preferences.colorElements = !!event.target.checked;
     tip.classList.toggle('kyf-color-elements', preferences.colorElements);
@@ -267,10 +292,11 @@
     renderList();
     renderItems();
   });
-  [panel.querySelector('#kyf-list'), panel.querySelector('#kyf-items')].forEach(enableWheelScroll);
+  [panel.querySelector('#kyf-list'), panel.querySelector('#kyf-items'), panel.querySelector('#kyf-change-log')].forEach(enableWheelScroll);
   panel.addEventListener('wheel', event => event.stopPropagation(), { passive: true });
   document.addEventListener('click', () => panel.querySelectorAll('.kyf-chance-wrap.open').forEach(element => element.classList.remove('open')));
 
+  renderChangeSystem();
   loadForum(false);
 
   function bindLauncherDrag() {
@@ -382,26 +408,34 @@
       const cached = loadCache(category);
       if (!force && cached && Date.now() - cached.savedAt < CACHE_MS && Array.isArray(cached.data)) {
         databases[category] = cached.data;
-        finishLoad('Dane z pamięci podręcznej', category);
+        categoryUpdatedAt[category] = Number(cached.savedAt) || 0;
+        finishLoad('Dane z pamięci podręcznej', category, categoryUpdatedAt[category]);
         return;
       }
       const html = await request(config.source);
-      databases[category] = parseForum(html);
-      const cacheSaved = saveCache(category, databases[category]);
-      finishLoad(cacheSaved ? 'Pobrano bezpośrednio z forum' : 'Pobrano z forum (bez zapisu cache)', category);
+      const previousData = cached && Array.isArray(cached.data) ? cached.data : databases[category];
+      const freshData = parseForum(html);
+      const updatedAt = Date.now();
+      databases[category] = freshData;
+      categoryUpdatedAt[category] = updatedAt;
+      recordDataCheck(category, previousData, freshData, updatedAt);
+      const cacheSaved = saveCache(category, freshData, updatedAt);
+      finishLoad(cacheSaved ? 'Pobrano bezpośrednio z forum' : 'Pobrano z forum (bez zapisu cache)', category, updatedAt);
     } catch (error) {
       console.warn('[Forum Elity]', config.label, error);
       setStatus('Nie udało się pobrać forum: ' + error.message, category);
     }
   }
 
-  function finishLoad(message, category) {
+  function finishLoad(message, category, updatedAt = categoryUpdatedAt[category]) {
     const database = databases[category];
+    if (updatedAt) categoryUpdatedAt[category] = updatedAt;
     if (!selectedMobs[category] || !database.some(mob => normalize(mob.name) === normalize(selectedMobs[category].name))) selectedMobs[category] = database[0] || null;
     if (category !== activeCategory) return;
     renderList();
     renderItems();
-    setStatus(`${message}: ${database.length} potworów, ${database.reduce((sum, mob) => sum + mob.items.length, 0)} przedmiotów.`, category);
+    renderChangeSystem();
+    setStatus(`${message}: ${database.length} potworów, ${database.reduce((sum, mob) => sum + mob.items.length, 0)} przedmiotów.${updatedAt ? ` Aktualizacja: ${formatDateTime(updatedAt)}.` : ''}`, category);
   }
 
   function loadCache(category) {
@@ -426,9 +460,9 @@
     }
   }
 
-  function saveCache(category, data) {
+  function saveCache(category, data, savedAt = Date.now()) {
     const key = CATEGORIES[category].cacheKey;
-    const payload = JSON.stringify({ savedAt: Date.now(), data });
+    const payload = JSON.stringify({ savedAt, data });
     try {
       GM_setValue(key, payload);
       localStorage.removeItem(key);
@@ -443,6 +477,121 @@
       console.warn('[Forum Elity] Brak miejsca na cache, dane pozostają w pamięci:', error);
       return false;
     }
+  }
+
+  function loadChangeLog() {
+    try {
+      const stored = GM_getValue(STORE_CHANGE_LOG, '[]');
+      const parsed = typeof stored === 'string' ? JSON.parse(stored) : stored;
+      return Array.isArray(parsed) ? parsed.slice(0, 40) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveChangeLog() {
+    changeLog = changeLog.slice(0, 40);
+    try { GM_setValue(STORE_CHANGE_LOG, JSON.stringify(changeLog)); } catch (error) { console.warn('[Forum Elity] Zapis historii zmian:', error); }
+  }
+
+  function recordDataCheck(category, previousData, freshData, timestamp) {
+    const changes = compareForumData(previousData, freshData);
+    changeLog.unshift({ timestamp, category, summary: changes.summary, details: changes.details, hidden: changes.hidden });
+    saveChangeLog();
+    renderChangeSystem();
+  }
+
+  function compareForumData(previousData, freshData) {
+    const previous = Array.isArray(previousData) ? previousData : [];
+    const fresh = Array.isArray(freshData) ? freshData : [];
+    if (!previous.length) {
+      const itemCount = fresh.reduce((sum, mob) => sum + (Array.isArray(mob.items) ? mob.items.length : 0), 0);
+      return { summary: `Pierwsze pobranie: ${fresh.length} potworów i ${itemCount} przedmiotów.`, details: [], hidden: 0 };
+    }
+    const oldMobs = new Map(previous.map(mob => [normalize(mob.name), mob]));
+    const newMobs = new Map(fresh.map(mob => [normalize(mob.name), mob]));
+    const counters = { addedMobs: 0, removedMobs: 0, changedMobs: 0, addedItems: 0, removedItems: 0, changedItems: 0 };
+    const details = [];
+    let detailCount = 0;
+    const addDetail = text => {
+      detailCount++;
+      if (details.length < 35) details.push(text);
+    };
+    for (const [key, mob] of newMobs) {
+      if (!oldMobs.has(key)) {
+        const itemCount = Array.isArray(mob.items) ? mob.items.length : 0;
+        counters.addedMobs++;
+        counters.addedItems += itemCount;
+        addDetail(`Dodano potwora: ${mob.name} (${itemCount} przedmiotów)`);
+      }
+    }
+    for (const [key, mob] of oldMobs) {
+      if (!newMobs.has(key)) {
+        const itemCount = Array.isArray(mob.items) ? mob.items.length : 0;
+        counters.removedMobs++;
+        counters.removedItems += itemCount;
+        addDetail(`Usunięto potwora: ${mob.name} (${itemCount} przedmiotów)`);
+      }
+    }
+    for (const [key, newMob] of newMobs) {
+      const oldMob = oldMobs.get(key);
+      if (!oldMob) continue;
+      const oldMobInfo = JSON.stringify([oldMob.level, oldMob.profile, oldMob.route, oldMob.mapAccessRange, oldMob.legendaryChestChance, oldMob.image]);
+      const newMobInfo = JSON.stringify([newMob.level, newMob.profile, newMob.route, newMob.mapAccessRange, newMob.legendaryChestChance, newMob.image]);
+      if (oldMobInfo !== newMobInfo) {
+        counters.changedMobs++;
+        addDetail(`Zmieniono informacje: ${newMob.name}`);
+      }
+      const oldItems = new Map((oldMob.items || []).map(item => [changeItemKey(item), item]));
+      const newItems = new Map((newMob.items || []).map(item => [changeItemKey(item), item]));
+      for (const [itemKeyValue, item] of newItems) {
+        if (!oldItems.has(itemKeyValue)) {
+          counters.addedItems++;
+          addDetail(`Dodano przedmiot: ${item.name} — ${newMob.name}`);
+        } else if (changeItemSignature(oldItems.get(itemKeyValue)) !== changeItemSignature(item)) {
+          counters.changedItems++;
+          addDetail(`Zmieniono przedmiot: ${item.name} — ${newMob.name}`);
+        }
+      }
+      for (const [itemKeyValue, item] of oldItems) {
+        if (!newItems.has(itemKeyValue)) {
+          counters.removedItems++;
+          addDetail(`Usunięto przedmiot: ${item.name} — ${newMob.name}`);
+        }
+      }
+    }
+    const totalChanges = Object.values(counters).reduce((sum, value) => sum + value, 0);
+    const summary = totalChanges
+      ? `Potwory: +${counters.addedMobs}, -${counters.removedMobs}, zm. ${counters.changedMobs}; przedmioty: +${counters.addedItems}, -${counters.removedItems}, zm. ${counters.changedItems}.`
+      : 'Sprawdzono — brak zmian w danych.';
+    return { summary, details, hidden: Math.max(0, detailCount - details.length) };
+  }
+
+  function changeItemKey(item) {
+    return normalize(item && item.name) + '|' + String(item && item.itemClass || '') + '|' + String(item && item.lootSource || 'regular');
+  }
+
+  function changeItemSignature(item) {
+    return JSON.stringify([item && item.raw, item && item.rarity, item && item.image, item && item.value, item && item.itemClass, item && item.lootSource]);
+  }
+
+  function renderChangeSystem() {
+    if (!panel || !panel.querySelector) return;
+    const timesBox = panel.querySelector('#kyf-update-times');
+    const logBox = panel.querySelector('#kyf-change-log');
+    if (!timesBox || !logBox) return;
+    timesBox.innerHTML = `<div class="kyf-update-time kyf-script-update"><b>Data aktualizacji dodatku v${escapeHtml(SCRIPT_VERSION)}:</b> ${escapeHtml(formatDateTime(SCRIPT_UPDATED_AT))}</div>`
+      + Object.entries(CATEGORIES).map(([category, config]) => `<div class="kyf-update-time"><b>${escapeHtml(config.label)}:</b> ${categoryUpdatedAt[category] ? escapeHtml(formatDateTime(categoryUpdatedAt[category])) : 'brak danych'}</div>`).join('');
+    if (!changeLog.length) {
+      logBox.innerHTML = '<div class="kyf-change-empty">Historia jest pusta. Pojawi się po pobraniu danych z forum.</div>';
+      return;
+    }
+    logBox.innerHTML = changeLog.map(entry => {
+      const categoryLabel = CATEGORIES[entry.category] ? CATEGORIES[entry.category].label : entry.category;
+      const details = (entry.details || []).map(detail => `<div class="kyf-change-detail">• ${escapeHtml(detail)}</div>`).join('');
+      const more = entry.hidden ? `<div class="kyf-change-more">…oraz ${entry.hidden} kolejnych zmian</div>` : '';
+      return `<div class="kyf-change-entry"><div class="kyf-change-entry-title">${escapeHtml(categoryLabel)} • ${escapeHtml(formatDateTime(entry.timestamp))}</div><div class="kyf-change-entry-summary">${escapeHtml(entry.summary || '')}</div>${details}${more}</div>`;
+    }).join('');
   }
 
   function cleanupObsoleteLocalCaches() {
@@ -471,7 +620,8 @@
       renderList();
       renderItems();
       const database = databases[category];
-      setStatus(`Wczytano: ${database.length} potworów, ${database.reduce((sum, mob) => sum + mob.items.length, 0)} przedmiotów.`, category);
+      const updatedAt = categoryUpdatedAt[category];
+      setStatus(`Wczytano: ${database.length} potworów, ${database.reduce((sum, mob) => sum + mob.items.length, 0)} przedmiotów.${updatedAt ? ` Aktualizacja: ${formatDateTime(updatedAt)}.` : ''}`, category);
     } else {
       panel.querySelector('#kyf-list').innerHTML = '<div class="kyf-empty">Pobieram listę…</div>';
       panel.querySelector('#kyf-items').innerHTML = '<div class="kyf-empty">Pobieram dane z forum…</div>';
@@ -779,6 +929,14 @@
   }
   function formatHundredths(value) { const number = Number(String(value).replace(',', '.')); return Number.isFinite(number) ? String(Number((number / 100).toFixed(2))) : String(value); }
   function formatItemValue(value) { const number = Number(String(value).replace(/\s/g, '')); if (!Number.isFinite(number)) return String(value); return number >= 1000 ? Number((number / 1000).toFixed(1)) + 'k' : String(number); }
+  function formatDateTime(timestamp) {
+    const value = Number(timestamp);
+    if (!Number.isFinite(value) || value <= 0) return 'brak danych';
+    return new Date(value).toLocaleString('pl-PL', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+  }
   function stripPlus(value) { return String(value).replace(/^\+/, ''); }
   function stripPercent(value) { return stripPlus(value).replace(/%$/, ''); }
   function formatLargeNumber(value) { return String(value).replace(/\d{4,}/g, number => number.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')); }
