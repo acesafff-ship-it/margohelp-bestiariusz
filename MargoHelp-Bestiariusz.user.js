@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.2
+// @version      2.2.3
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -60,8 +60,8 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SCRIPT_VERSION = '2.2.2';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-15T00:33:00+02:00').getTime();
+  const SCRIPT_VERSION = '2.2.3';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-16T20:54:00+02:00').getTime();
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_PANEL_POS = 'ky_forum_special_panel_pos_v1';
@@ -190,7 +190,7 @@
   const collapsedGroups = savedCollapsedGroups && typeof savedCollapsedGroups === 'object' && !Array.isArray(savedCollapsedGroups) ? savedCollapsedGroups : {};
   const preferences = {
     colorElements: !!savedSettings.colorElements,
-    lootMultiplier: Math.round(clampNumber(savedSettings.lootMultiplier, 1, 5, 1)),
+    lootMultiplier: Math.round(clampNumber(savedSettings.lootMultiplier, 1, 6, 1)),
     lootBonus: clampNumber(savedSettings.lootBonus, 0, 100, 0),
     levelRange: Math.round(clampNumber(savedSettings.levelRange, 13, 50, 13)),
     e2Variant: E2_CHANCE_VARIANTS[savedSettings.e2Variant] ? savedSettings.e2Variant : 'standard'
@@ -266,7 +266,7 @@
     <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><button class="kyf-options-btn" id="kyf-options-btn">Opcje</button><button id="kyf-close">X</button></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><button class="kyf-tab" data-category="elites">Elity</button><button class="kyf-tab active" data-category="elites2">Elity II</button><button class="kyf-tab" data-category="heroes">Herosi</button><button class="kyf-tab" data-category="colossi">Kolosi</button><button class="kyf-tab" data-category="titans">Tytani</button></div>
-      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Mnożnik <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option></select></label><label>Zmniejszenie pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit i Herosów ± <input type="number" id="kyf-level-range" min="13" max="50" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
+      <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Zmniejszenie wagi pustego łupu (Elity+) <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option><option value="6">×6</option></select></label><label>Bonus gracza do pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit i Herosów ± <input type="number" id="kyf-level-range" min="13" max="50" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><button id="kyf-clear-history">Wyczyść historię</button></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
       <div class="kyf-tools"><input class="kyf-input" id="kyf-search" placeholder="Szukaj elity lub przedmiotu"><button class="kyf-btn" id="kyf-refresh">Odśwież forum</button></div>
       <div class="kyf-main"><div class="kyf-list" id="kyf-list"></div><div class="kyf-items" id="kyf-items"><div class="kyf-empty">Pobieram dane z forum…</div></div></div>
       <div class="kyf-source" id="kyf-status"></div>
@@ -305,7 +305,7 @@
     savePreferences();
   });
   panel.querySelector('#kyf-loot-multiplier').addEventListener('change', event => {
-    preferences.lootMultiplier = Math.round(clampNumber(event.target.value, 1, 5, 1));
+    preferences.lootMultiplier = Math.round(clampNumber(event.target.value, 1, 6, 1));
     event.target.value = String(preferences.lootMultiplier);
     savePreferences();
     renderItems();
@@ -834,7 +834,7 @@
     const base = '<div class="kyf-chance-note">Wartości przybliżone, pobrane z oficjalnego tematu forum.';
     if (!modified) return base + '</div>';
     if (!hasSeparateEmptyChance) return base + '<br>Bonus jest ustawiony, ale źródło nie podaje osobno pustego łupu, więc nie pokazuję zgadywanego przeliczenia.</div>';
-    return base + `<br>Przeliczenie: mnożnik ×${escapeHtml(preferences.lootMultiplier)}; zmniejszenie pustego łupu: ${escapeHtml(preferences.lootBonus)}%.</div>`;
+    return base + `<br>Przeliczenie: zmniejszenie wagi pustego łupu dla Elit+ ×${escapeHtml(preferences.lootMultiplier)}; bonus gracza: ${escapeHtml(preferences.lootBonus)}%.</div>`;
   }
 
   function adjustedChanceText(label, rawChance, emptyChance) {
