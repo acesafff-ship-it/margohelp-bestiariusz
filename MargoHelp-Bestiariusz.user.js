@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.33
+// @version      2.2.34
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -60,9 +60,10 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SCRIPT_VERSION = '2.2.33';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-22T20:55:03+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Logo Bestiariusza ma teraz dokładnie kwadratowy przycisk 44×44 px, prawidłowe proporcje i idealne wyśrodkowanie.';
+  const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów' };
+  const SCRIPT_VERSION = '2.2.34';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-22T21:18:12+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Dolny pasek zawiera teraz informację o własności grafik oraz krótki link do odpowiedniego działu forum dla każdej kategorii.';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_WIDGET_SLOT = 'ky_forum_special_widget_slot_v1';
@@ -458,7 +459,7 @@
       <div class="kyf-release-popup" role="dialog" aria-modal="true" aria-labelledby="kyf-release-title">
         <div class="kyf-release-popup-head"><span id="kyf-release-title">Bestiariusz ${escapeHtml(SCRIPT_VERSION)} — co nowego?</span><button class="kyf-release-popup-close" type="button" aria-label="Zamknij">X</button></div>
         <div class="kyf-release-popup-body">
-          <ul><li>Przycisk Bestiariusza ma teraz dokładnie 44×44 px razem z obramowaniem.</li><li>Logo zachowuje prawidłowe proporcje i jest idealnie wyśrodkowane.</li><li>Usunięto wystawanie grafiki poza kwadrat przycisku.</li></ul>
+          <ul><li>W dolnym pasku dodano informację, że wykorzystane grafiki są własnością Garmory.</li><li>Usunięto z paska liczbę potworów, przedmiotów i datę aktualizacji.</li><li>Pozostawiono tylko link do odpowiedniego działu: Elity, Elity II, Herosi, Kolosi lub Tytani.</li></ul>
           <button class="kyf-release-popup-button" type="button">Rozumiem</button>
         </div>
       </div>`;
@@ -1349,9 +1350,10 @@
   function saveJson(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* brak miejsca nie blokuje dodatku */ }
   }
-  function setStatus(text, category = activeCategory) {
+  function setStatus(_text, category = activeCategory) {
     if (category !== activeCategory) return;
     const config = CATEGORIES[category];
-    panel.querySelector('#kyf-status').innerHTML = `${escapeHtml(text)} | <a href="${config.source}" target="_blank" rel="noopener">otwórz ${escapeHtml(config.label)}</a>`;
+    const linkLabel = SOURCE_LINK_LABELS[category] || config.label;
+    panel.querySelector('#kyf-status').innerHTML = `Wykorzystane grafiki są własnością Garmory. | <a href="${config.source}" target="_blank" rel="noopener">Otwórz ${escapeHtml(linkLabel)}</a>`;
   }
 })();
