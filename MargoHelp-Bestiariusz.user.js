@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.32
+// @version      2.2.33
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -60,9 +60,9 @@
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SCRIPT_VERSION = '2.2.32';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-22T20:43:38+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Powiększona wyłącznie grafika wybranego potwora oraz poprawione ułożenie jego nazwy, poziomu, zakresu łupu i drewnianego tła nagłówka.';
+  const SCRIPT_VERSION = '2.2.33';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-22T20:55:03+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Logo Bestiariusza ma teraz dokładnie kwadratowy przycisk 44×44 px, prawidłowe proporcje i idealne wyśrodkowanie.';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_WIDGET_SLOT = 'ky_forum_special_widget_slot_v1';
@@ -248,9 +248,9 @@
     #ky-forum-e2 ::-webkit-scrollbar{width:10px;height:10px}#ky-forum-e2 ::-webkit-scrollbar-track{background:#171614;border-left:1px solid #3b3832}#ky-forum-e2 ::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#403c35,#746a5a,#403c35);border:1px solid #1a1815;border-radius:1px}#ky-forum-e2 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(90deg,#514b41,#8a7c67,#514b41)}
 
     /* Przycisk w natywnym pasku interfejsu, zgodny ze strukturą widżetów Maddonz. */
-    .main-buttons-container > .kyf-launch{position:absolute!important;top:0!important;right:auto!important;z-index:3!important;width:44px!important;height:44px!important;padding:0!important;margin:0!important;border:1px solid #0c0d0d!important;border-radius:4px!important;background:linear-gradient(to top,#12210d,#396b29)!important;box-shadow:inset 0 0 1px 1px #cecece,inset 0 0 0 3px #0c0d0d!important;cursor:grab!important;overflow:visible!important;touch-action:none!important}
-    .main-buttons-container > .kyf-launch .kyf-launch-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:0!important;background:transparent}
-    .main-buttons-container > .kyf-launch .kyf-launch-icon img{display:block;width:40px;height:40px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 1px 2px #000)}
+    .main-buttons-container > .kyf-launch{position:absolute!important;top:0!important;right:auto!important;z-index:3!important;box-sizing:border-box!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important;padding:0!important;margin:0!important;border:1px solid #0c0d0d!important;border-radius:4px!important;background:linear-gradient(to top,#12210d,#396b29)!important;box-shadow:inset 0 0 1px 1px #cecece,inset 0 0 0 3px #0c0d0d!important;line-height:0!important;cursor:grab!important;overflow:hidden!important;touch-action:none!important}
+    .main-buttons-container > .kyf-launch .kyf-launch-icon{position:absolute;inset:2px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:38px;height:38px;margin:0!important;background:transparent;overflow:hidden}
+    .main-buttons-container > .kyf-launch .kyf-launch-icon img{display:block;box-sizing:border-box;width:38px;height:38px;max-width:38px;max-height:38px;aspect-ratio:1/1;object-fit:contain;object-position:center;pointer-events:none;filter:drop-shadow(0 1px 2px #000)}
     .main-buttons-container > .kyf-launch:hover .kyf-launch-icon{filter:brightness(1.15)}
     .main-buttons-container > .kyf-launch .red-notification{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#d82929;z-index:2}
     .main-buttons-container > .kyf-launch .red-notification[hidden]{display:none!important}
@@ -458,7 +458,7 @@
       <div class="kyf-release-popup" role="dialog" aria-modal="true" aria-labelledby="kyf-release-title">
         <div class="kyf-release-popup-head"><span id="kyf-release-title">Bestiariusz ${escapeHtml(SCRIPT_VERSION)} — co nowego?</span><button class="kyf-release-popup-close" type="button" aria-label="Zamknij">X</button></div>
         <div class="kyf-release-popup-body">
-          <ul><li>Powiększona została wyłącznie grafika aktualnie wybranego potwora.</li><li>Ikony potworów na liście zachowują wcześniejszy, kompaktowy rozmiar.</li><li>Poprawiono ułożenie nazwy, poziomu i zakresu łupu względem dużej grafiki.</li><li>Drewniane tło obejmuje teraz cały nagłówek wybranego potwora.</li></ul>
+          <ul><li>Przycisk Bestiariusza ma teraz dokładnie 44×44 px razem z obramowaniem.</li><li>Logo zachowuje prawidłowe proporcje i jest idealnie wyśrodkowane.</li><li>Usunięto wystawanie grafiki poza kwadrat przycisku.</li></ul>
           <button class="kyf-release-popup-button" type="button">Rozumiem</button>
         </div>
       </div>`;
