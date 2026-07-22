@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.34
+// @version      2.2.35
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -61,9 +61,11 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów' };
-  const SCRIPT_VERSION = '2.2.34';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-22T21:18:12+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Dolny pasek zawiera teraz informację o własności grafik oraz krótki link do odpowiedniego działu forum dla każdej kategorii.';
+  const SCRIPT_VERSION = '2.2.35';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-23T00:34:54+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Dodano anonimowy licznik użytkowników aktywnych w ciągu ostatnich 3 minut. Licznik nie przesyła nicku, świata ani danych postaci.';
+  const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
+  const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
   const STORE_LAUNCHER_POS = 'ky_forum_special_launcher_pos_v1';
   const STORE_WIDGET_SLOT = 'ky_forum_special_widget_slot_v1';
@@ -220,7 +222,7 @@
     #ky-forum-e2{background:#1a1917;color:#e6e0d2;border:3px ridge #8b806e;border-radius:3px;box-shadow:0 0 0 2px #17110d,0 13px 36px rgba(0,0,0,.9),inset 0 0 18px rgba(0,0,0,.65);font-family:Verdana,Arial,sans-serif}
     #ky-forum-e2:after{content:"";position:absolute;inset:2px;z-index:20;border:1px solid rgba(218,194,143,.22);pointer-events:none}
     .kyf-head{position:relative;z-index:21;height:47px;padding:7px 10px;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 3px),linear-gradient(180deg,#503a2e 0%,#35251d 48%,#211711 51%,#2f211a 100%);border-bottom:3px ridge #877965;box-shadow:inset 0 1px #8b6b50,inset 0 -1px #100b08}
-    .kyf-title{color:#f2d681;font-size:14px;letter-spacing:.4px;text-shadow:1px 1px #1b1008,0 0 5px rgba(255,210,100,.25)}
+    .kyf-title{color:#f2d681;font-size:14px;letter-spacing:.4px;text-shadow:1px 1px #1b1008,0 0 5px rgba(255,210,100,.25)}.kyf-online{color:#79c995;font-weight:bold}.kyf-online.offline{color:#8d8a82}
     .kyf-sub{color:#b9aa91;text-shadow:1px 1px #17100c}.kyf-sub a{color:#dbc27b}.kyf-sub a:hover{color:#fff0aa}
     .kyf-body{height:calc(100% - 47px);padding:8px;gap:6px;background:radial-gradient(circle at 50% 0,rgba(119,98,67,.12),transparent 40%),linear-gradient(135deg,rgba(255,255,255,.012) 25%,transparent 25%) 0 0/5px 5px,#181817}
     .kyf-head button,.kyf-btn,.kyf-tab,.kyf-change-head button{border:2px ridge #776d5e;border-radius:3px;background:linear-gradient(#494a44,#262724 52%,#1b1c1a 53%,#30312d);color:#e5dfd1;text-shadow:1px 1px #111;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);font-family:Verdana,Arial,sans-serif}
@@ -364,7 +366,7 @@
   panel.id = 'ky-forum-e2';
   panel.innerHTML = `
     <div class="kyf-frame-horizontal kyf-frame-top" aria-hidden="true"></div>
-    <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><div class="kyf-native-button button small green kyf-options-btn" id="kyf-options-btn" role="button" tabindex="0"><div class="background"></div><div class="label">Opcje</div></div><div class="kyf-native-button button small red" id="kyf-close" role="button" tabindex="0"><div class="background"></div><div class="label">X</div></div></div></div>
+    <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • <span class="kyf-online offline" id="kyf-online">Online: —</span> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><div class="kyf-native-button button small green kyf-options-btn" id="kyf-options-btn" role="button" tabindex="0"><div class="background"></div><div class="label">Opcje</div></div><div class="kyf-native-button button small red" id="kyf-close" role="button" tabindex="0"><div class="background"></div><div class="label">X</div></div></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><div class="kyf-tab button small green" role="button" tabindex="0" data-category="elites"><div class="background"></div><div class="label">Elity</div></div><div class="kyf-tab button small green active" role="button" tabindex="0" data-category="elites2"><div class="background"></div><div class="label">Elity II</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="heroes"><div class="background"></div><div class="label">Herosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="colossi"><div class="background"></div><div class="label">Kolosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="titans"><div class="background"></div><div class="label">Tytani</div></div></div>
       <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Zmniejszenie wagi pustego łupu (Elity+) <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option><option value="6">×6</option></select></label><label>Bonus gracza do pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit i Herosów ± <input type="number" id="kyf-level-range" min="13" max="50" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><div class="kyf-native-button button small red" id="kyf-clear-history" role="button" tabindex="0"><div class="background"></div><div class="label">Wyczyść historię</div></div></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
@@ -374,6 +376,10 @@
     </div>
     <div class="kyf-frame-horizontal kyf-frame-bottom" aria-hidden="true"></div>`;
   document.body.appendChild(panel);
+  let presenceInterval = 0;
+  let presenceVisibilityHandler = null;
+  window.__KROL_YSS_BESTIARY_PRESENCE__ = { start: startPresence, stop: stopPresence };
+  startPresence();
   showReleasePopup();
   const savedPanelPos = loadJson(STORE_PANEL_POS, null);
   if (savedPanelPos && Number.isFinite(savedPanelPos.left) && Number.isFinite(savedPanelPos.top)) {
@@ -459,7 +465,7 @@
       <div class="kyf-release-popup" role="dialog" aria-modal="true" aria-labelledby="kyf-release-title">
         <div class="kyf-release-popup-head"><span id="kyf-release-title">Bestiariusz ${escapeHtml(SCRIPT_VERSION)} — co nowego?</span><button class="kyf-release-popup-close" type="button" aria-label="Zamknij">X</button></div>
         <div class="kyf-release-popup-body">
-          <ul><li>W dolnym pasku dodano informację, że wykorzystane grafiki są własnością Garmory.</li><li>Usunięto z paska liczbę potworów, przedmiotów i datę aktualizacji.</li><li>Pozostawiono tylko link do odpowiedniego działu: Elity, Elity II, Herosi, Kolosi lub Tytani.</li></ul>
+          <ul><li>Dodano licznik osób korzystających aktualnie z Bestiariusza.</li><li>Aktywność jest liczona anonimowo przez 3 minuty od ostatniego sygnału.</li><li>Dodatek nie przesyła nicku, świata ani żadnych danych postaci.</li></ul>
           <button class="kyf-release-popup-button" type="button">Rozumiem</button>
         </div>
       </div>`;
@@ -1349,6 +1355,61 @@
   }
   function saveJson(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* brak miejsca nie blokuje dodatku */ }
+  }
+  function getPresenceId() {
+    try {
+      let id = localStorage.getItem(STORE_PRESENCE_ID) || '';
+      if (/^[a-zA-Z0-9_-]{16,64}$/.test(id)) return id;
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      id = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem(STORE_PRESENCE_ID, id);
+      return id;
+    } catch (error) {
+      return '';
+    }
+  }
+  function startPresence() {
+    const label = panel.querySelector('#kyf-online');
+    const clientId = getPresenceId();
+    if (!label || !clientId || presenceInterval) return;
+
+    const heartbeat = async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const response = await fetch(`${PRESENCE_URL}/heartbeat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const online = Math.max(0, Number(data?.online) || 0);
+        label.textContent = `Online: ${online}`;
+        label.classList.remove('offline');
+      } catch (error) {
+        label.textContent = 'Online: —';
+        label.classList.add('offline');
+      }
+    };
+
+    heartbeat();
+    presenceInterval = setInterval(heartbeat, 60000);
+    presenceVisibilityHandler = () => {
+      if (document.visibilityState === 'visible') heartbeat();
+    };
+    document.addEventListener('visibilitychange', presenceVisibilityHandler);
+  }
+  function stopPresence() {
+    if (presenceInterval) clearInterval(presenceInterval);
+    presenceInterval = 0;
+    if (presenceVisibilityHandler) document.removeEventListener('visibilitychange', presenceVisibilityHandler);
+    presenceVisibilityHandler = null;
+    const label = panel.querySelector('#kyf-online');
+    if (label) {
+      label.textContent = 'Online: —';
+      label.classList.add('offline');
+    }
   }
   function setStatus(_text, category = activeCategory) {
     if (category !== activeCategory) return;
