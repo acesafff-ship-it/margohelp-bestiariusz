@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.35
+// @version      2.2.36
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @description  Podręczny bestiariusz Elit, Elit II, Herosów, Kolosów i Tytanów z przedmiotami pobieranymi z oficjalnych tematów forum Margonem.
@@ -61,9 +61,9 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów' };
-  const SCRIPT_VERSION = '2.2.35';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-23T00:34:54+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Dodano anonimowy licznik użytkowników aktywnych w ciągu ostatnich 3 minut. Licznik nie przesyła nicku, świata ani danych postaci.';
+  const SCRIPT_VERSION = '2.2.36';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-23T19:30:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Poprawiono opis przedmiotów dodających złoto oraz synchronizację anonimowego licznika online między osobnym Bestiariuszem i YssPackiem.';
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
   const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
@@ -1168,6 +1168,15 @@
     if (key === 'personal') return `<div class="kyf-stat">Przedmiot osobisty</div>`;
     if (key === 'soulbound') return `<div class="kyf-stat">Związany z właścicielem na stałe</div>`;
     if (key === 'runes') return `<div class="kyf-stat">Dodaje ${strong(value)} Smoczych Run</div>`;
+    if (key === 'gold') {
+      const amounts = String(value).match(/\d+/g)?.map(Number).filter(Number.isFinite) || [];
+      if (amounts.length >= 2) {
+        return `<div class="kyf-stat">Dodaje od ${strong(formatLargeNumber(amounts[0]))} do ${strong(formatLargeNumber(amounts[1]))} złota</div>`;
+      }
+      if (amounts.length === 1) {
+        return `<div class="kyf-stat">Dodaje ${strong(formatLargeNumber(amounts[0]))} złota</div>`;
+      }
+    }
     if (key === 'reqp') return formatProfessionRequirement(value);
     if (key === 'legbon' || key === 'socket_fleeting_legbon') return `<div class="kyf-stat">${escapeHtml(LABELS[key] || 'Bonus legendarny')}: ${strong(formatLegendaryBonus(value))}</div>`;
     if (key === 'sa') return `<div class="kyf-stat">SA: ${strong('+' + formatHundredths(value))}</div>`;
@@ -1371,11 +1380,12 @@
   }
   function startPresence() {
     const label = panel.querySelector('#kyf-online');
-    const clientId = getPresenceId();
-    if (!label || !clientId || presenceInterval) return;
+    if (!label || presenceInterval) return;
 
     const heartbeat = async () => {
       if (document.visibilityState !== 'visible') return;
+      const clientId = getPresenceId();
+      if (!clientId) return;
       try {
         const response = await fetch(`${PRESENCE_URL}/heartbeat`, {
           method: 'POST',
