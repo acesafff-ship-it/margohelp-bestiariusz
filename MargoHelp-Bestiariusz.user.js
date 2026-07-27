@@ -62,9 +62,9 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów' };
-  const SCRIPT_VERSION = '2.2.36';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-23T19:30:00+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Poprawiono opis przedmiotów dodających złoto oraz synchronizację anonimowego licznika online między osobnym Bestiariuszem i YssPackiem.';
+  const SCRIPT_VERSION = '2.2.37';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-27T23:50:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Dodano nowe logo Bestiariusza — czaszkę z księgą w zielonej oprawie.';
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
   const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
