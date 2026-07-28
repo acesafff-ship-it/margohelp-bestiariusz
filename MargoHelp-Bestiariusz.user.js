@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.43
+// @version      2.2.44
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @icon         https://acesafff-ship-it.github.io/ysspack/assets/module-bestiary-enabled.png
@@ -74,9 +74,9 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów', summerHeroes: 'Herosów Wakacyjnych', summerColossi: 'Kolosów Wakacyjnych' };
-  const SCRIPT_VERSION = '2.2.43';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-28T16:45:00+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Dodano Herosów Wakacyjnych i Kolosów Wakacyjnych z wydarzenia Wakacje 2026.';
+  const SCRIPT_VERSION = '2.2.44';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-28T22:10:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Poprawiono nazwy obrażeń od głębokiej rany i obrażeń nieuchronnych w dymkach przedmiotów.';
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
   const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
@@ -139,9 +139,9 @@
     abdest: 'Niszczenie absorpcji', adest: 'Obniżenie leczenia', afterheal: 'Leczenie po walce',
     bag: 'Miejsca w torbie', btype: 'Ograniczenie zawartości', respred: 'Szybsze wracanie do siebie',
     manafatig: 'Zmęczenie many', enfatig: 'Zmęczenie energii', hpbon: 'Życie za siłę',
-    leczy: 'Leczenie', dmgmul: 'Wszystkie obrażenia', dmgmulabsolute: 'Obrażenia bezpośrednie',
+    leczy: 'Leczenie', dmgmul: 'Wszystkie obrażenia', dmgmulabsolute: 'Obrażenia nieuchronne',
     dmgmulfire: 'Obrażenia od ognia', dmgmulfrost: 'Obrażenia od zimna', dmgmullight: 'Obrażenia od błyskawic',
-    dmgmulphysical: 'Obrażenia fizyczne', dmgmulpoison: 'Obrażenia od trucizny', dmgmulwound: 'Obrażenia od rany',
+    dmgmulphysical: 'Obrażenia fizyczne', dmgmulpoison: 'Obrażenia od trucizny', dmgmulwound: 'Obrażenia od głębokiej rany',
     enhancement_refund: 'Ekstrakcja ulepszenia', personal: 'Przedmiot osobisty', soulbound: 'Związany z właścicielem',
     socket_content: 'Zawartość gniazda', socket_fleeting_legbon: 'Bonus w gnieździe'
   };
