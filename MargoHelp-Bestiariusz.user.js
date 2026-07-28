@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.42
+// @version      2.2.43
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @icon         https://acesafff-ship-it.github.io/ysspack/assets/module-bestiary-enabled.png
@@ -74,7 +74,7 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów', summerHeroes: 'Herosów Wakacyjnych', summerColossi: 'Kolosów Wakacyjnych' };
-  const SCRIPT_VERSION = '2.2.42';
+  const SCRIPT_VERSION = '2.2.43';
   const SCRIPT_UPDATED_AT = new Date('2026-07-28T16:45:00+02:00').getTime();
   const SCRIPT_RELEASE_NOTES = 'Dodano Herosów Wakacyjnych i Kolosów Wakacyjnych z wydarzenia Wakacje 2026.';
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
@@ -483,7 +483,7 @@
       <div class="kyf-release-popup" role="dialog" aria-modal="true" aria-labelledby="kyf-release-title">
         <div class="kyf-release-popup-head"><span id="kyf-release-title">Bestiariusz ${escapeHtml(SCRIPT_VERSION)} — co nowego?</span><button class="kyf-release-popup-close" type="button" aria-label="Zamknij">X</button></div>
         <div class="kyf-release-popup-body">
-          <ul><li>Obniżono zbyt wysokie warstwy panelu Bestiariusza.</li><li>Tooltipy przedmiotów pozostają nad panelem, ale nie przykrywają całego interfejsu gry.</li><li>Okno „Co nowego?” otrzymało osobną, bezpieczną warstwę.</li></ul>
+          <ul><li>${escapeHtml(SCRIPT_RELEASE_NOTES)}</li></ul>
           <button class="kyf-release-popup-button" type="button">Rozumiem</button>
         </div>
       </div>`;
