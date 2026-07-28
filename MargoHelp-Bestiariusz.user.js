@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.45
+// @version      2.2.46
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @icon         https://acesafff-ship-it.github.io/ysspack/assets/module-bestiary-enabled.png
@@ -74,9 +74,9 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów', summerHeroes: 'Herosów Wakacyjnych', summerColossi: 'Kolosów Wakacyjnych' };
-  const SCRIPT_VERSION = '2.2.45';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-28T22:25:00+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Dodano wskaźnik aktualności wersji oraz poprawiono nazwy i formatowanie statystyk w dymkach przedmiotów.';
+  const SCRIPT_VERSION = '2.2.46';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-28T22:35:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Poprawiono etykietę statystyki Wszystkie cechy oraz zachowano poprawione formatowanie wartości w dymkach.';
   const UPDATE_SOURCE_URL = 'https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js';
   const UPDATE_INSTALL_URL = UPDATE_SOURCE_URL;
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
@@ -139,7 +139,7 @@
     reslight: 'Odporność na błyskawice', act: 'Odporność na truciznę', resdmg: 'Niszczenie odporności',
     crit: 'Cios krytyczny', critval: 'Moc ciosu krytycznego fizycznego', critmval: 'Moc ciosu krytycznego magicznego',
     lowcrit: 'Obniżenie krytyka', lowevade: 'Obniżenie uniku', evade: 'Unik', blok: 'Blok',
-    all: 'Wszystkie cechy', da: 'Ostrość miecza', ds: 'Siła', dz: 'Zręczność', di: 'Intelekt', hp: 'Życie',
+    all: 'Wszystkie cechy', da: 'Wszystkie cechy', ds: 'Siła', dz: 'Zręczność', di: 'Intelekt', hp: 'Życie',
     mana: 'Mana', manabon: 'Mana', energy: 'Energia', energybon: 'Energia', sa: 'SA',
     heal: 'Leczenie podczas walki', slow: 'Obniżenie SA przeciwnika', pierce: 'Przebicie pancerza',
     pierceb: 'Blokowanie przebicia', contra: 'Kontra', absorb: 'Absorpcja fizyczna',
