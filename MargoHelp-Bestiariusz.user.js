@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.39
+// @version      2.2.42
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @icon         https://acesafff-ship-it.github.io/ysspack/assets/module-bestiary-enabled.png
@@ -58,13 +58,25 @@
       label: 'Tytani',
       source: 'https://forum.margonem.pl/?task=forum&show=posts&id=514733&ps=0',
       cacheKey: 'ky_forum_titans_items_v3'
+    },
+    summerHeroes: {
+      label: 'Herosi Wakacyjni',
+      source: 'https://forum.margonem.pl/?task=forum&show=posts&id=517857&ps=0#post46905787',
+      cacheKey: 'ky_forum_summer_heroes_2026_v2',
+      eventType: 'heroes'
+    },
+    summerColossi: {
+      label: 'Kolosi Wakacyjni',
+      source: 'https://forum.margonem.pl/?task=forum&show=posts&id=517857&ps=0#post46905790',
+      cacheKey: 'ky_forum_summer_colossi_2026_v2',
+      eventType: 'colossi'
     }
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
-  const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów' };
-  const SCRIPT_VERSION = '2.2.39';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-28T09:25:00+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Poprawiono kolejność warstw panelu, tooltipów i okna aktualizacji.';
+  const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów', summerHeroes: 'Herosów Wakacyjnych', summerColossi: 'Kolosów Wakacyjnych' };
+  const SCRIPT_VERSION = '2.2.42';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-28T16:45:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Dodano Herosów Wakacyjnych i Kolosów Wakacyjnych z wydarzenia Wakacje 2026.';
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
   const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
@@ -123,7 +135,7 @@
     pierceb: 'Blokowanie przebicia', contra: 'Kontra', absorb: 'Absorpcja fizyczna',
     absorbm: 'Absorpcja magiczna', lvl: 'Wymagany poziom', reqp: 'Profesja', amount: 'Ilość',
     capacity: 'Maksimum w stosie', runes: 'Smocze Runy', ttl: 'Czas trwania', gold: 'Złoto',
-    opis: 'Opis', legbon: 'Bonus legendarny', teleport: 'Teleport', lootbox2: 'Skrytka',
+    opis: 'Opis', legbon: 'Bonus legendarny', teleport: 'Teleport', lootbox2: 'Skrytka', etiquette: 'Wydarzenie',
     abdest: 'Niszczenie absorpcji', adest: 'Obniżenie leczenia', afterheal: 'Leczenie po walce',
     bag: 'Miejsca w torbie', btype: 'Ograniczenie zawartości', respred: 'Szybsze wracanie do siebie',
     manafatig: 'Zmęczenie many', enfatig: 'Zmęczenie energii', hpbon: 'Życie za siłę',
@@ -182,9 +194,9 @@
   const STAT_ORDER = ['ac','dmg','pdmg','acdmg','fire','light','frost','poison','resfire','resfrost','rescold','reslight','act','resdmg','crit','critval','critmval','lowcrit','dmgmul','dmgmulphysical','dmgmulfire','dmgmulfrost','dmgmullight','dmgmulpoison','dmgmulwound','dmgmulabsolute','all','da','ds','dz','di','evade','lowevade','heal','afterheal','hp','hpbon','mana','manabon','energy','energybon','sa','absorb','absorbm','abdest','adest','blok','pierce','pierceb','contra','slow','wound','enfatig','manafatig','leczy','bag','btype','runes','ttl','gold','amount','capacity','teleport','socket_content'];
   const STRUCTURAL_KEYS = new Set(['opis','legbon','socket_fleeting_legbon','binds','bind','permbound','soulbound','lvl','reqp','rarity']);
 
-  const databases = { elites: [], elites2: [], heroes: [], colossi: [], titans: [] };
-  const selectedMobs = { elites: null, elites2: null, heroes: null, colossi: null, titans: null };
-  const categoryUpdatedAt = { elites: 0, elites2: 0, heroes: 0, colossi: 0, titans: 0 };
+  const databases = { elites: [], elites2: [], heroes: [], colossi: [], titans: [], summerHeroes: [], summerColossi: [] };
+  const selectedMobs = { elites: null, elites2: null, heroes: null, colossi: null, titans: null, summerHeroes: null, summerColossi: null };
+  const categoryUpdatedAt = { elites: 0, elites2: 0, heroes: 0, colossi: 0, titans: 0, summerHeroes: 0, summerColossi: 0 };
   let activeCategory = 'elites2';
   let filter = '';
   let changeLog = loadChangeLog();
@@ -212,7 +224,7 @@
   style.textContent = `
     #ky-forum-e2{position:fixed;right:22px;top:75px;width:570px;height:650px;z-index:100;display:none;background:#091011;color:#e8f2ee;border:1px solid #438b70;border-radius:8px;box-shadow:0 14px 42px #000;font:11px Arial,sans-serif;overflow:hidden}
     #ky-forum-e2 *{box-sizing:border-box}.kyf-head{height:45px;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#101919;border-bottom:1px solid #29443d;cursor:move;user-select:none}.kyf-title{color:#6dffc0;font-size:14px;font-weight:bold}.kyf-sub{font-size:9px;color:#859b93}.kyf-sub a{color:#69dcae;text-decoration:none}.kyf-sub a:hover{text-decoration:underline;color:#8affc9}.kyf-head button,.kyf-btn{height:27px;border:1px solid #39745f;border-radius:5px;background:#10221c;color:#caffea;font-size:10px;font-weight:bold;cursor:pointer}.kyf-head button{width:27px;color:#ffb3b3;border-color:#744646;background:#251414}
-    .kyf-body{height:calc(100% - 45px);display:flex;flex-direction:column;padding:7px;gap:6px}.kyf-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.kyf-tab{height:29px;padding:0 3px;border:1px solid #29433e;border-radius:5px;background:#0c1515;color:#9db1aa;font-size:10px;font-weight:bold;cursor:pointer}.kyf-tab.active{border-color:#50d69f;background:#123328;color:#7cffc4}.kyf-tools{display:grid;grid-template-columns:1fr auto;gap:5px}.kyf-input{height:29px;border:1px solid #29433e;border-radius:5px;background:#050a0b;color:#eef8f4;padding:0 8px;outline:none}.kyf-main{display:grid;grid-template-columns:205px 1fr;gap:7px;min-height:0;flex:1}.kyf-list,.kyf-items{min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid #203531;border-radius:6px;background:#05090a;scrollbar-width:thin}.kyf-count{position:sticky;top:0;z-index:3;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531;color:#8fa79f;font-size:9px}.kyf-mob{min-height:45px;padding:4px;display:grid;grid-template-columns:38px 1fr;gap:5px;align-items:center;border-bottom:1px solid #172522;cursor:pointer}.kyf-mob:hover{background:#101b19}.kyf-mob.active{background:#17362b;color:#75ffc0}.kyf-mob-image,.kyf-selected-image{display:flex;align-items:center;justify-content:center;border:1px solid #263a36;border-radius:4px;background:#0c1211;overflow:hidden}.kyf-mob-image{width:36px;height:36px}.kyf-mob-image img{max-width:36px;max-height:36px}.kyf-selected-image{width:72px;height:72px}.kyf-selected-image img{max-width:70px;max-height:70px;image-rendering:auto}.kyf-mob-name{font-weight:bold}.kyf-meta{margin-top:1px;color:#8c9f99;font-size:9px}.kyf-items{padding:6px}.kyf-selected{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:78px 1fr;gap:6px;align-items:center;margin:-6px -6px 6px;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531}.kyf-selected-name{font-weight:bold;color:#dff9ee}.kyf-empty{padding:10px;color:#8c9e98;line-height:14px}.kyf-source{border:1px solid #203531;border-radius:5px;background:#0d1616;padding:5px 6px;color:#91a69f;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kyf-source a{color:#64eeb2}
+    .kyf-body{height:calc(100% - 45px);display:flex;flex-direction:column;padding:7px;gap:6px}.kyf-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.kyf-tabs-event{grid-template-columns:repeat(2,1fr)}.kyf-tab{height:29px;padding:0 3px;border:1px solid #29433e;border-radius:5px;background:#0c1515;color:#9db1aa;font-size:10px;font-weight:bold;cursor:pointer}.kyf-tab.active{border-color:#50d69f;background:#123328;color:#7cffc4}.kyf-tools{display:grid;grid-template-columns:1fr auto;gap:5px}.kyf-input{height:29px;border:1px solid #29433e;border-radius:5px;background:#050a0b;color:#eef8f4;padding:0 8px;outline:none}.kyf-main{display:grid;grid-template-columns:205px 1fr;gap:7px;min-height:0;flex:1}.kyf-list,.kyf-items{min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid #203531;border-radius:6px;background:#05090a;scrollbar-width:thin}.kyf-count{position:sticky;top:0;z-index:3;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531;color:#8fa79f;font-size:9px}.kyf-mob{min-height:45px;padding:4px;display:grid;grid-template-columns:38px 1fr;gap:5px;align-items:center;border-bottom:1px solid #172522;cursor:pointer}.kyf-mob:hover{background:#101b19}.kyf-mob.active{background:#17362b;color:#75ffc0}.kyf-mob-image,.kyf-selected-image{display:flex;align-items:center;justify-content:center;border:1px solid #263a36;border-radius:4px;background:#0c1211;overflow:hidden}.kyf-mob-image{width:36px;height:36px}.kyf-mob-image img{max-width:36px;max-height:36px}.kyf-selected-image{width:72px;height:72px}.kyf-selected-image img{max-width:70px;max-height:70px;image-rendering:auto}.kyf-mob-name{font-weight:bold}.kyf-meta{margin-top:1px;color:#8c9f99;font-size:9px}.kyf-items{padding:6px}.kyf-selected{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:78px 1fr;gap:6px;align-items:center;margin:-6px -6px 6px;padding:5px 6px;background:#0e1717;border-bottom:1px solid #203531}.kyf-selected-name{font-weight:bold;color:#dff9ee}.kyf-empty{padding:10px;color:#8c9e98;line-height:14px}.kyf-source{border:1px solid #203531;border-radius:5px;background:#0d1616;padding:5px 6px;color:#91a69f;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kyf-source a{color:#64eeb2}
     .kyf-garmory-credit{color:#b8aa91;font-weight:bold}.kyf-garmory-credit a{color:#e2c66e;text-decoration:none}.kyf-garmory-credit a:hover{color:#ffe39a;text-decoration:underline}.kyf-group{margin-bottom:5px;border:1px solid #233733;border-radius:6px;overflow:hidden}.kyf-group h4{margin:0;padding:5px 6px;background:#101919;display:flex;justify-content:space-between;font-size:10px;cursor:pointer;user-select:none}.kyf-group h4:hover{background:#152421}.kyf-collapse-marker{display:inline-block;width:12px;color:#7fa69a}.kyf-group.collapsed .kyf-grid{display:none}.kyf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(39px,1fr));gap:5px;padding:6px}.kyf-item{height:39px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rarity);border-radius:5px;background:#050707;cursor:help;position:relative}.kyf-item img{max-width:35px;max-height:35px}.kyf-tip{position:fixed;z-index:110;display:none;width:320px;max-height:80vh;overflow:auto;padding:6px;border:2px solid var(--rarity);background:rgba(3,5,4,.98);color:#edf3ef;box-shadow:0 8px 25px #000;pointer-events:none;font:11px/14px Verdana,Arial,sans-serif}.kyf-tip-head{display:grid;grid-template-columns:40px 1fr;gap:7px;align-items:center;padding:4px;border:1px solid #35443f;background:#151a18;margin-bottom:5px}.kyf-tip-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--rarity);border-radius:3px;background:linear-gradient(145deg,#20211e,#090a09 70%);box-shadow:0 0 5px var(--rarity),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 6px #000}.kyf-tip-icon img{display:block;max-width:35px;max-height:35px}.kyf-tip-name{font-weight:bold;color:var(--rarity)}.kyf-tip-rarity{font-weight:bold;color:var(--rarity);border-bottom:1px solid var(--rarity);padding-bottom:3px;margin-bottom:3px}.kyf-stat{padding:1px 0}.kyf-stat b{color:#ffb52e}.kyf-legbon{color:#58ef70;font-weight:bold;margin-top:4px;padding-top:3px;border-top:1px solid #3b4641}.kyf-legbon-desc{color:#58ef70;padding:1px 0 4px;border-bottom:1px solid #3b4641}.kyf-opis{color:#aeb9b4;margin-top:4px;padding:4px 0;border-bottom:1px solid #3b4641}.kyf-bind{margin-top:5px;padding-bottom:4px;border-bottom:1px solid #3b4641}.kyf-footer{padding-top:4px}.kyf-footer .kyf-stat{font-weight:bold}.kyf-launch{position:fixed;right:8px;top:75px;z-index:99;width:39px;height:39px;border:2px solid #4c7869;border-radius:6px;background:#081512;color:#72ffc2;font:bold 12px Arial;cursor:pointer;box-shadow:0 0 0 2px #050807}
     .kyf-route-group h4{color:#77e8bd}.kyf-route-body{padding:6px;color:#c7d8d2;font-size:10px;line-height:14px;background:#08100f}.kyf-route-missing{color:#81958e;font-style:italic}.kyf-group.collapsed .kyf-route-body{display:none}
     .kyf-launch{padding:1px;overflow:hidden}.kyf-launch img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
@@ -282,6 +294,10 @@
     #ky-forum-e2 .kyf-tab.button.small.green:hover{filter:brightness(1.18)!important}
     #ky-forum-e2 .kyf-tab.button.small.green.active{background:#000 linear-gradient(to top,#1d3c16,#4e843d)!important;box-shadow:inset 0 0 1px 1px #e2e2c8,inset 0 0 0 3px #11150f,0 0 4px #779a4d!important}
     #ky-forum-e2 .kyf-tab.button.small.green.active .label{color:#fff0a0!important;font-weight:bold}
+    #ky-forum-e2 .kyf-tab.button.small.blue{position:relative;display:flex;align-items:center;justify-content:center;height:30px!important;padding:0!important;border:1px solid #0c0d0d!important;border-radius:8px!important;background:#000 linear-gradient(to top,#101d31,#285383)!important;box-shadow:inset 0 0 1px 1px #cecece,inset 0 0 0 3px #0c0d0d!important;cursor:pointer}
+    #ky-forum-e2 .kyf-tab.button.small.blue .label{color:#dceeff!important}
+    #ky-forum-e2 .kyf-tab.button.small.blue.active{background:#000 linear-gradient(to top,#17385f,#367bb4)!important;box-shadow:inset 0 0 1px 1px #e2edf8,inset 0 0 0 3px #0c1420,0 0 5px #4f9bd1!important}
+    #ky-forum-e2 .kyf-tab.button.small.blue.active .label{color:#fff3a7!important;font-weight:bold}
     #ky-forum-e2 .kyf-tools{padding:3px;border-top:1px solid #766c5d;border-bottom:1px solid #292622;background:rgba(10,10,10,.45)}
     #ky-forum-e2 .kyf-title{color:#f4db77!important;text-shadow:1px 1px #100b06,0 0 4px #6e491c!important}
     #ky-forum-e2 .kyf-native-button.button.small{position:relative;display:flex;align-items:center;justify-content:center;height:27px!important;width:auto;padding:0!important;border:1px solid #0c0d0d!important;border-radius:8px!important;box-shadow:inset 0 0 1px 1px #cecece,inset 0 0 0 3px #0c0d0d!important;cursor:pointer!important;overflow:hidden;font:12.8px/24px Arimo,Calibri,"Segoe UI",Arial,sans-serif!important}
@@ -370,6 +386,7 @@
     <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • <span class="kyf-online offline" id="kyf-online">Online: —</span> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><div class="kyf-native-button button small green kyf-options-btn" id="kyf-options-btn" role="button" tabindex="0"><div class="background"></div><div class="label">Opcje</div></div><div class="kyf-native-button button small red" id="kyf-close" role="button" tabindex="0"><div class="background"></div><div class="label">X</div></div></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><div class="kyf-tab button small green" role="button" tabindex="0" data-category="elites"><div class="background"></div><div class="label">Elity</div></div><div class="kyf-tab button small green active" role="button" tabindex="0" data-category="elites2"><div class="background"></div><div class="label">Elity II</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="heroes"><div class="background"></div><div class="label">Herosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="colossi"><div class="background"></div><div class="label">Kolosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="titans"><div class="background"></div><div class="label">Tytani</div></div></div>
+      <div class="kyf-tabs kyf-tabs-event"><div class="kyf-tab button small blue" role="button" tabindex="0" data-category="summerHeroes"><div class="background"></div><div class="label">Herosi Wakacyjni</div></div><div class="kyf-tab button small blue" role="button" tabindex="0" data-category="summerColossi"><div class="background"></div><div class="label">Kolosi Wakacyjni</div></div></div>
       <div class="kyf-options" id="kyf-options"><label><input type="checkbox" id="kyf-color-elements"> Koloruj żywioły i odporności</label><label>Zmniejszenie wagi pustego łupu (Elity+) <select id="kyf-loot-multiplier"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4</option><option value="5">×5</option><option value="6">×6</option></select></label><label>Bonus gracza do pustego łupu <input type="number" id="kyf-loot-bonus" min="0" max="100" step="1">%</label><label>Zakres pełnego łupu Elit i Herosów ± <input type="number" id="kyf-level-range" min="13" max="50" step="1"> lvl</label><div class="kyf-change-system"><div class="kyf-change-head"><span>System aktualizacji danych</span><div class="kyf-native-button button small red" id="kyf-clear-history" role="button" tabindex="0"><div class="background"></div><div class="label">Wyczyść historię</div></div></div><div class="kyf-update-times" id="kyf-update-times"></div><div class="kyf-change-log" id="kyf-change-log"></div></div></div>
       <div class="kyf-tools"><input class="kyf-input" id="kyf-search" placeholder="Szukaj elity lub przedmiotu"><div class="kyf-native-button button small green" id="kyf-refresh" role="button" tabindex="0"><div class="background"></div><div class="label">Odśwież forum</div></div></div>
       <div class="kyf-main"><div class="kyf-list" id="kyf-list"></div><div class="kyf-items" id="kyf-items"><div class="kyf-empty">Pobieram dane z forum…</div></div></div>
@@ -656,7 +673,7 @@
       }
       const html = await request(config.source);
       const previousData = cached && Array.isArray(cached.data) ? cached.data : databases[category];
-      const freshData = parseForum(html);
+      const freshData = config.eventType ? parseSummerForum(html, config.eventType) : parseForum(html);
       const updatedAt = Date.now();
       databases[category] = freshData;
       categoryUpdatedAt[category] = updatedAt;
@@ -908,6 +925,55 @@
     return mobs.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, 'pl'));
   }
 
+  function parseSummerForum(html, eventType) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const headingPattern = eventType === 'heroes' ? /^HEROSI:$/i : /^KOLOSI cz\.[12]:$/i;
+    const posts = [...doc.querySelectorAll('blockquote')]
+      .filter(blockquote => headingPattern.test((blockquote.textContent || '').trim()))
+      .map(blockquote => blockquote.closest('td'))
+      .filter((post, index, list) => post && list.indexOf(post) === index);
+    const mobs = [];
+    for (const post of posts) {
+      const markers = [...post.querySelectorAll('b')].map(element => {
+        const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
+        const match = text.match(/^(.+?)\s*\((\d+)\s*(?:lvl|[a-ząćęłńóśźż])\)$/i);
+        return match ? { element, name: match[1].trim(), level: Number(match[2]) } : null;
+      }).filter(Boolean);
+      markers.forEach((marker, index) => {
+        const range = doc.createRange();
+        range.setStartAfter(marker.element);
+        if (markers[index + 1]) range.setEndBefore(markers[index + 1].element);
+        else range.setEnd(post, post.childNodes.length);
+        const container = doc.createElement('div');
+        container.appendChild(range.cloneContents());
+        const items = parseItems(container.innerHTML, 'regular');
+        if (!items.length) return;
+        const npcImage = findSummerNpcImage(marker.element, post, markers[index + 1] && markers[index + 1].element);
+        const profile = eventType === 'heroes' ? 'Heros wakacyjny' : 'Kolos wakacyjny';
+        mobs.push({ name: marker.name, profile, level: marker.level, image: npcImage, legendaryChestChance: '', mapAccessRange: '', route: '', items });
+      });
+    }
+    return mobs.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, 'pl'));
+  }
+
+  function findSummerNpcImage(marker, post, nextMarker) {
+    let node = marker;
+    while ((node = nextNodeIn(node, post))) {
+      if (nextMarker && (node === nextMarker || (node.nodeType === 1 && node.contains(nextMarker)))) break;
+      if (node.nodeType === 1 && node.matches && node.matches('img[src*="/obrazki/npc/"]')) return absoluteImage(decode(node.getAttribute('src') || ''));
+    }
+    return '';
+  }
+
+  function nextNodeIn(node, root) {
+    if (node.firstChild) return node.firstChild;
+    while (node && node !== root) {
+      if (node.nextSibling) return node.nextSibling;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
   function parseMapAccessRange(html) {
     const text = new DOMParser().parseFromString(html, 'text/html').body.textContent.replace(/\s+/g, ' ').trim();
     const closed = text.match(/Wejście na mapę:\s*(\d+)\s*[-–—]\s*(\d+)\s*lvl/i);
@@ -969,8 +1035,9 @@
     const items = selectedMob.items.filter(item => !query || normalize(selectedMob.name).includes(query) || normalize(item.name).includes(query));
     const groups = new Map();
     items.forEach(item => {
-      const source = activeCategory === 'heroes' && item.lootSource === 'chest' ? 'chest' : 'regular';
-      const isNeutralHeroLoot = activeCategory === 'heroes' && source === 'regular' && Number(item.itemClass) === 15;
+      const isHeroCategory = activeCategory === 'heroes' || activeCategory === 'summerHeroes';
+      const source = isHeroCategory && item.lootSource === 'chest' ? 'chest' : 'regular';
+      const isNeutralHeroLoot = isHeroCategory && source === 'regular' && Number(item.itemClass) === 15;
       const key = isNeutralHeroLoot ? 'regular:neutral' : source + ':' + item.rarity;
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(item);
@@ -1030,6 +1097,8 @@
   }
 
   function renderDropChancePopover(category, mob) {
+    if (category === 'summerHeroes') return renderDropChancePopover('heroes', mob);
+    if (category === 'summerColossi') return renderDropChancePopover('colossi', mob);
     if (category === 'elites2') {
       const variant = E2_CHANCE_VARIANTS[preferences.e2Variant] || E2_CHANCE_VARIANTS.standard;
       const options = Object.entries(E2_CHANCE_VARIANTS).map(([key, entry]) => `<option value="${escapeHtml(key)}"${key === preferences.e2Variant ? ' selected' : ''}>${escapeHtml(entry.label)}</option>`).join('');
@@ -1323,7 +1392,7 @@
 
   function monsterRangeLine(category, mob) {
     let text = '';
-    if (category === 'elites' || category === 'elites2' || category === 'heroes') text = combatRangeText(mob.level);
+    if (category === 'elites' || category === 'elites2' || category === 'heroes' || category === 'summerHeroes') text = combatRangeText(mob.level);
     else if ((category === 'colossi' || category === 'titans') && mob.mapAccessRange) text = `Wejście na mapę: ${mob.mapAccessRange}`;
     return text ? `<div class="kyf-meta kyf-range">${escapeHtml(text)}</div>` : '';
   }
