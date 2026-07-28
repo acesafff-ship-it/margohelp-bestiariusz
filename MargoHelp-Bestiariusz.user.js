@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MargoHelp Bestiariusz Podręczny
 // @namespace    acesaff-margohelp-bestiary
-// @version      2.2.44
+// @version      2.2.45
 // @author       Król Yss
 // @homepageURL  https://www.margonem.pl/profile/view,10050726#char_5601,luvia
 // @icon         https://acesafff-ship-it.github.io/ysspack/assets/module-bestiary-enabled.png
@@ -74,9 +74,11 @@
   };
   const CACHE_MS = 6 * 60 * 60 * 1000;
   const SOURCE_LINK_LABELS = { elites: 'Elity', elites2: 'Elity II', heroes: 'Herosów', colossi: 'Kolosów', titans: 'Tytanów', summerHeroes: 'Herosów Wakacyjnych', summerColossi: 'Kolosów Wakacyjnych' };
-  const SCRIPT_VERSION = '2.2.44';
-  const SCRIPT_UPDATED_AT = new Date('2026-07-28T22:10:00+02:00').getTime();
-  const SCRIPT_RELEASE_NOTES = 'Poprawiono nazwy obrażeń od głębokiej rany i obrażeń nieuchronnych w dymkach przedmiotów.';
+  const SCRIPT_VERSION = '2.2.45';
+  const SCRIPT_UPDATED_AT = new Date('2026-07-28T22:25:00+02:00').getTime();
+  const SCRIPT_RELEASE_NOTES = 'Dodano wskaźnik aktualności wersji oraz poprawiono nazwy i formatowanie statystyk w dymkach przedmiotów.';
+  const UPDATE_SOURCE_URL = 'https://raw.githubusercontent.com/acesafff-ship-it/margohelp-bestiariusz/main/MargoHelp-Bestiariusz.user.js';
+  const UPDATE_INSTALL_URL = UPDATE_SOURCE_URL;
   const PRESENCE_URL = 'https://ysspack-bestiary-online.acesaff.workers.dev';
   const STORE_PRESENCE_ID = 'ky_forum_bestiary_presence_id_v1';
   const STORE_SETTINGS = 'ky_forum_special_settings_v1';
@@ -121,6 +123,14 @@
     common: { label: 'Pospolite', color: '#9da8aa', order: 5 },
     unknown: { label: 'Pozostałe', color: '#65736f', order: 6 }
   };
+  const ITEM_RARITY_LABELS = {
+    legendary: 'Legendarny',
+    heroic: 'Heroiczny',
+    unique: 'Unikatowy',
+    upgraded: 'Ulepszony',
+    common: 'Pospolity',
+    unknown: 'Pozostały'
+  };
   const LABELS = {
     ac: 'Pancerz', dmg: 'Atak', pdmg: 'Obrażenia fizyczne', acdmg: 'Niszczenie pancerza',
     fire: 'Obrażenia od ognia', frost: 'Obrażenia od zimna', cold: 'Obrażenia od zimna',
@@ -129,7 +139,7 @@
     reslight: 'Odporność na błyskawice', act: 'Odporność na truciznę', resdmg: 'Niszczenie odporności',
     crit: 'Cios krytyczny', critval: 'Moc ciosu krytycznego fizycznego', critmval: 'Moc ciosu krytycznego magicznego',
     lowcrit: 'Obniżenie krytyka', lowevade: 'Obniżenie uniku', evade: 'Unik', blok: 'Blok',
-    da: 'Wszystkie cechy', ds: 'Siła', dz: 'Zręczność', di: 'Intelekt', hp: 'Życie',
+    all: 'Wszystkie cechy', da: 'Ostrość miecza', ds: 'Siła', dz: 'Zręczność', di: 'Intelekt', hp: 'Życie',
     mana: 'Mana', manabon: 'Mana', energy: 'Energia', energybon: 'Energia', sa: 'SA',
     heal: 'Leczenie podczas walki', slow: 'Obniżenie SA przeciwnika', pierce: 'Przebicie pancerza',
     pierceb: 'Blokowanie przebicia', contra: 'Kontra', absorb: 'Absorpcja fizyczna',
@@ -228,7 +238,7 @@
     .kyf-garmory-credit{color:#b8aa91;font-weight:bold}.kyf-garmory-credit a{color:#e2c66e;text-decoration:none}.kyf-garmory-credit a:hover{color:#ffe39a;text-decoration:underline}.kyf-group{margin-bottom:5px;border:1px solid #233733;border-radius:6px;overflow:hidden}.kyf-group h4{margin:0;padding:5px 6px;background:#101919;display:flex;justify-content:space-between;font-size:10px;cursor:pointer;user-select:none}.kyf-group h4:hover{background:#152421}.kyf-collapse-marker{display:inline-block;width:12px;color:#7fa69a}.kyf-group.collapsed .kyf-grid{display:none}.kyf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(39px,1fr));gap:5px;padding:6px}.kyf-item{height:39px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rarity);border-radius:5px;background:#050707;cursor:help;position:relative}.kyf-item img{max-width:35px;max-height:35px}.kyf-tip{position:fixed;z-index:110;display:none;width:320px;max-height:80vh;overflow:auto;padding:6px;border:2px solid var(--rarity);background:rgba(3,5,4,.98);color:#edf3ef;box-shadow:0 8px 25px #000;pointer-events:none;font:11px/14px Verdana,Arial,sans-serif}.kyf-tip-head{display:grid;grid-template-columns:40px 1fr;gap:7px;align-items:center;padding:4px;border:1px solid #35443f;background:#151a18;margin-bottom:5px}.kyf-tip-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--rarity);border-radius:3px;background:linear-gradient(145deg,#20211e,#090a09 70%);box-shadow:0 0 5px var(--rarity),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 6px #000}.kyf-tip-icon img{display:block;max-width:35px;max-height:35px}.kyf-tip-name{font-weight:bold;color:var(--rarity)}.kyf-tip-rarity{font-weight:bold;color:var(--rarity);border-bottom:1px solid var(--rarity);padding-bottom:3px;margin-bottom:3px}.kyf-stat{padding:1px 0}.kyf-stat b{color:#ffb52e}.kyf-legbon{color:#58ef70;font-weight:bold;margin-top:4px;padding-top:3px;border-top:1px solid #3b4641}.kyf-legbon-desc{color:#58ef70;padding:1px 0 4px;border-bottom:1px solid #3b4641}.kyf-opis{color:#aeb9b4;margin-top:4px;padding:4px 0;border-bottom:1px solid #3b4641}.kyf-bind{margin-top:5px;padding-bottom:4px;border-bottom:1px solid #3b4641}.kyf-footer{padding-top:4px}.kyf-footer .kyf-stat{font-weight:bold}.kyf-launch{position:fixed;right:8px;top:75px;z-index:99;width:39px;height:39px;border:2px solid #4c7869;border-radius:6px;background:#081512;color:#72ffc2;font:bold 12px Arial;cursor:pointer;box-shadow:0 0 0 2px #050807}
     .kyf-route-group h4{color:#77e8bd}.kyf-route-body{padding:6px;color:#c7d8d2;font-size:10px;line-height:14px;background:#08100f}.kyf-route-missing{color:#81958e;font-style:italic}.kyf-group.collapsed .kyf-route-body{display:none}
     .kyf-launch{padding:1px;overflow:hidden}.kyf-launch img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
-    .kyf-head-actions{display:flex;gap:5px}.kyf-head .kyf-options-btn{width:auto;padding:0 8px;color:#caffea;border-color:#39745f;background:#10221c}.kyf-options{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:center;padding:7px;border:1px solid #29433e;border-radius:6px;background:#0d1716}.kyf-options.open{display:grid}.kyf-options label{display:flex;align-items:center;gap:5px;color:#b9c9c3;font-size:9px}.kyf-options select,.kyf-options input[type=number]{height:25px;border:1px solid #34564d;border-radius:4px;background:#050a0b;color:#eaf6f1;padding:0 5px}.kyf-options input[type=number]{width:52px}.kyf-range{color:#70cfa9}.kyf-selected{grid-template-columns:78px 1fr auto}.kyf-chance-wrap{position:relative;align-self:start}.kyf-chance-btn{width:23px;height:23px;border:1px solid #3c8069;border-radius:50%;background:#10211c;color:#7cffc2;font-weight:bold;cursor:pointer}.kyf-chance-popover{display:none;position:absolute;z-index:30;right:0;top:27px;width:280px;max-height:390px;overflow:auto;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.99);box-shadow:0 8px 24px #000;color:#dce9e4;font-size:10px;line-height:14px}.kyf-chance-wrap.open .kyf-chance-popover{display:block}.kyf-chance-title{font-weight:bold;color:#77ffc2;margin-bottom:5px}.kyf-chance-row{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid #172824}.kyf-chance-row span:last-child{text-align:right}.kyf-chance-summary{margin-bottom:4px;padding:4px;border:1px solid #35594d;border-radius:3px;background:#101b18}.kyf-chance-summary span:first-child{font-weight:bold;color:#d8e9e2}.kyf-chance-adjusted{display:block;color:#70eeb1;font-size:9px}.kyf-chance-note{margin-top:6px;color:#8fa39b;font-size:9px;line-height:12px}.kyf-chance-select{width:100%;height:26px;margin:3px 0 6px;border:1px solid #34564d;border-radius:4px;background:#07100e;color:#e9f6f1}.kyf-tip.kyf-color-elements .kyf-element-fire{color:#ff5757}.kyf-tip.kyf-color-elements .kyf-element-frost{color:#62aaff}.kyf-tip.kyf-color-elements .kyf-element-light{color:#ffe34f}.kyf-tip.kyf-color-elements .kyf-element-poison{color:#52e86f}.kyf-launch{cursor:grab;user-select:none;touch-action:none}.kyf-launch.dragging{cursor:grabbing}
+    .kyf-head-actions{display:flex;align-items:center;gap:5px}.kyf-version-status{color:#a89f8d;font-size:9px;font-weight:bold;text-decoration:none;white-space:nowrap;text-shadow:1px 1px #000}.kyf-version-status.current{color:#62d66e}.kyf-version-status.outdated{color:#ff6b61;text-decoration:underline;cursor:pointer}.kyf-version-status.outdated:hover{color:#ffaaa3}.kyf-version-status.error{color:#a89f8d;font-size:8px;font-weight:normal}.kyf-head .kyf-options-btn{width:auto;padding:0 8px;color:#caffea;border-color:#39745f;background:#10221c}.kyf-options{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:center;padding:7px;border:1px solid #29433e;border-radius:6px;background:#0d1716}.kyf-options.open{display:grid}.kyf-options label{display:flex;align-items:center;gap:5px;color:#b9c9c3;font-size:9px}.kyf-options select,.kyf-options input[type=number]{height:25px;border:1px solid #34564d;border-radius:4px;background:#050a0b;color:#eaf6f1;padding:0 5px}.kyf-options input[type=number]{width:52px}.kyf-range{color:#70cfa9}.kyf-selected{grid-template-columns:78px 1fr auto}.kyf-chance-wrap{position:relative;align-self:start}.kyf-chance-btn{width:23px;height:23px;border:1px solid #3c8069;border-radius:50%;background:#10211c;color:#7cffc2;font-weight:bold;cursor:pointer}.kyf-chance-popover{display:none;position:absolute;z-index:30;right:0;top:27px;width:280px;max-height:390px;overflow:auto;padding:8px;border:1px solid #4c9b7e;border-radius:6px;background:rgba(5,11,10,.99);box-shadow:0 8px 24px #000;color:#dce9e4;font-size:10px;line-height:14px}.kyf-chance-wrap.open .kyf-chance-popover{display:block}.kyf-chance-title{font-weight:bold;color:#77ffc2;margin-bottom:5px}.kyf-chance-row{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid #172824}.kyf-chance-row span:last-child{text-align:right}.kyf-chance-summary{margin-bottom:4px;padding:4px;border:1px solid #35594d;border-radius:3px;background:#101b18}.kyf-chance-summary span:first-child{font-weight:bold;color:#d8e9e2}.kyf-chance-adjusted{display:block;color:#70eeb1;font-size:9px}.kyf-chance-note{margin-top:6px;color:#8fa39b;font-size:9px;line-height:12px}.kyf-chance-select{width:100%;height:26px;margin:3px 0 6px;border:1px solid #34564d;border-radius:4px;background:#07100e;color:#e9f6f1}.kyf-tip.kyf-color-elements .kyf-element-fire{color:#ff5757}.kyf-tip.kyf-color-elements .kyf-element-frost{color:#62aaff}.kyf-tip.kyf-color-elements .kyf-element-light{color:#ffe34f}.kyf-tip.kyf-color-elements .kyf-element-poison{color:#52e86f}.kyf-launch{cursor:grab;user-select:none;touch-action:none}.kyf-launch.dragging{cursor:grabbing}
     .kyf-change-system{grid-column:1/-1;border-top:1px solid #29433e;padding-top:6px}.kyf-change-head{display:flex;align-items:center;justify-content:space-between;color:#72efba;font-size:10px;font-weight:bold}.kyf-change-head button{height:22px;padding:0 7px;border:1px solid #4f6a62;border-radius:4px;background:#111a18;color:#aebdb8;font-size:9px;cursor:pointer}.kyf-update-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 8px;margin:5px 0;color:#91a79f;font-size:9px}.kyf-update-time b{color:#c8d8d2}.kyf-script-update,.kyf-release-note{grid-column:1/-1}.kyf-script-update{color:#76dcb4}.kyf-release-note{margin-top:2px;padding:4px 5px;border:1px solid #3b3326;background:rgba(63,49,27,.32);color:#cfc5b2;line-height:12px}.kyf-release-note b{color:#e2c66e}.kyf-change-log{max-height:135px;overflow:auto;border:1px solid #223a34;border-radius:4px;background:#07100e;scrollbar-width:thin}.kyf-change-empty{padding:7px;color:#778a84;font-size:9px}.kyf-change-entry{padding:6px;border-bottom:1px solid #172923;font-size:9px;line-height:12px}.kyf-change-entry:last-child{border-bottom:0}.kyf-change-entry-title{color:#6ff0b7;font-weight:bold}.kyf-change-entry-summary{color:#c3d2cd}.kyf-change-detail{color:#91a49e;padding-left:8px}.kyf-change-more{color:#6f837d;font-style:italic;padding-left:8px}
 
     /* Motyw inspirowany klasycznym interfejsem Margonem */
@@ -383,7 +393,7 @@
   panel.id = 'ky-forum-e2';
   panel.innerHTML = `
     <div class="kyf-frame-horizontal kyf-frame-top" aria-hidden="true"></div>
-    <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • <span class="kyf-online offline" id="kyf-online">Online: —</span> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><div class="kyf-native-button button small green kyf-options-btn" id="kyf-options-btn" role="button" tabindex="0"><div class="background"></div><div class="label">Opcje</div></div><div class="kyf-native-button button small red" id="kyf-close" role="button" tabindex="0"><div class="background"></div><div class="label">X</div></div></div></div>
+    <div class="kyf-head"><div><div class="kyf-title">BESTIARIUSZ ${SCRIPT_VERSION}</div><div class="kyf-sub">Autor: <a href="https://www.margonem.pl/profile/view,10050726#char_5601,luvia" target="_blank" rel="noopener">Król Yss</a> • <span class="kyf-online offline" id="kyf-online">Online: —</span> • Elity • Herosi • Kolosi • Tytani</div></div><div class="kyf-head-actions"><a class="kyf-version-status" id="kyf-version-status">Sprawdzanie wersji…</a><div class="kyf-native-button button small green kyf-options-btn" id="kyf-options-btn" role="button" tabindex="0"><div class="background"></div><div class="label">Opcje</div></div><div class="kyf-native-button button small red" id="kyf-close" role="button" tabindex="0"><div class="background"></div><div class="label">X</div></div></div></div>
     <div class="kyf-body">
       <div class="kyf-tabs"><div class="kyf-tab button small green" role="button" tabindex="0" data-category="elites"><div class="background"></div><div class="label">Elity</div></div><div class="kyf-tab button small green active" role="button" tabindex="0" data-category="elites2"><div class="background"></div><div class="label">Elity II</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="heroes"><div class="background"></div><div class="label">Herosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="colossi"><div class="background"></div><div class="label">Kolosi</div></div><div class="kyf-tab button small green" role="button" tabindex="0" data-category="titans"><div class="background"></div><div class="label">Tytani</div></div></div>
       <div class="kyf-tabs kyf-tabs-event"><div class="kyf-tab button small blue" role="button" tabindex="0" data-category="summerHeroes"><div class="background"></div><div class="label">Herosi Wakacyjni</div></div><div class="kyf-tab button small blue" role="button" tabindex="0" data-category="summerColossi"><div class="background"></div><div class="label">Kolosi Wakacyjni</div></div></div>
@@ -470,6 +480,7 @@
   document.addEventListener('click', () => panel.querySelectorAll('.kyf-chance-wrap.open').forEach(element => element.classList.remove('open')));
 
   renderChangeSystem();
+  checkScriptVersion();
   loadForum(false);
 
   function showReleasePopup() {
@@ -657,6 +668,45 @@
       onload: response => response.status >= 200 && response.status < 300 ? resolve(response.responseText) : reject(new Error('HTTP ' + response.status)),
       onerror: reject
     }));
+  }
+
+  async function checkScriptVersion() {
+    const status = panel.querySelector('#kyf-version-status');
+    if (!status) return;
+    try {
+      const source = await request(`${UPDATE_SOURCE_URL}?t=${Date.now()}`);
+      const latestVersion = source.match(/@version\s+([0-9]+(?:\.[0-9]+)*)/)?.[1] || SCRIPT_VERSION;
+      if (compareVersions(SCRIPT_VERSION, latestVersion) < 0) {
+        status.className = 'kyf-version-status outdated';
+        status.textContent = 'Dostępna aktualizacja';
+        status.href = UPDATE_INSTALL_URL;
+        status.target = '_blank';
+        status.rel = 'noopener noreferrer';
+        status.title = `Zainstaluj Bestiariusz ${latestVersion}`;
+      } else {
+        status.className = 'kyf-version-status current';
+        status.textContent = 'Wersja aktualna';
+        status.removeAttribute('href');
+        status.removeAttribute('target');
+        status.removeAttribute('rel');
+        status.title = `Bestiariusz ${SCRIPT_VERSION}`;
+      }
+    } catch (error) {
+      status.className = 'kyf-version-status error';
+      status.textContent = 'Nie udało się sprawdzić';
+      console.warn('[Bestiariusz] Nie udało się sprawdzić aktualizacji:', error);
+    }
+  }
+
+  function compareVersions(left, right) {
+    const leftParts = String(left).split('.').map(part => Number.parseInt(part, 10) || 0);
+    const rightParts = String(right).split('.').map(part => Number.parseInt(part, 10) || 0);
+    const length = Math.max(leftParts.length, rightParts.length);
+    for (let index = 0; index < length; index += 1) {
+      const difference = (leftParts[index] || 0) - (rightParts[index] || 0);
+      if (difference) return difference;
+    }
+    return 0;
   }
 
   async function loadForum(force) {
@@ -1196,7 +1246,7 @@
     ].join('');
     tip.style.setProperty('--rarity', info.color);
     tip.classList.toggle('kyf-color-elements', preferences.colorElements);
-    tip.innerHTML = `<div class="kyf-tip-head"><div class="kyf-tip-icon">${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : ''}</div><div><div class="kyf-tip-name">${escapeHtml(item.name)}</div><div class="kyf-meta">Typ: ${escapeHtml(ITEM_TYPES[item.itemClass] || 'nieznany')}</div></div></div><div class="kyf-tip-rarity">${info.label}</div>${rows}${bonusHtml}${descriptionHtml}${bindHtml}${footer ? `<div class="kyf-footer">${footer}</div>` : ''}`;
+    tip.innerHTML = `<div class="kyf-tip-head"><div class="kyf-tip-icon">${item.image ? `<img src="${escapeHtml(item.image)}" alt="">` : ''}</div><div><div class="kyf-tip-name">${escapeHtml(item.name)}</div><div class="kyf-meta">Typ: ${escapeHtml(ITEM_TYPES[item.itemClass] || 'nieznany')}</div></div></div><div class="kyf-tip-rarity">${escapeHtml(ITEM_RARITY_LABELS[item.rarity] || info.label)}</div>${rows}${bonusHtml}${descriptionHtml}${bindHtml}${footer ? `<div class="kyf-footer">${footer}</div>` : ''}`;
     tip.style.display = 'block';
     moveTip(x, y);
   }
@@ -1231,6 +1281,8 @@
     if (key === 'adest') return `<div class="kyf-stat">Obniża właścicielowi ${strong(value)} punktów przywracania życia podczas walki</div>`;
     if (key === 'hpbon') return `<div class="kyf-stat">${strong('+' + stripPlus(value))} życia za 1 pkt siły</div>`;
     if (key === 'heal') return `<div class="kyf-stat">Przywraca ${strong(value)} punktów życia podczas walki</div>`;
+    if (key === 'acdmg') return `<div class="kyf-stat">Niszczy ${strong(stripPlus(value))} punktów pancerza podczas ciosu</div>`;
+    if (key === 'lowevade') return `<div class="kyf-stat">Podczas ataku unik przeciwnika jest mniejszy o ${strong(stripPlus(value))}</div>`;
     if (key === 'leczy') return `<div class="kyf-stat">Leczy ${strong(value)} punktów życia</div>`;
     if (key === 'bag') return `<div class="kyf-stat">Mieści ${strong(value)} przedmiotów</div>`;
     if (key === 'btype') return `<div class="kyf-stat">Tylko ${strong(String(value).split(',').map(code => BAG_TYPES[code] || code).join(', '))}</div>`;
@@ -1254,13 +1306,13 @@
     if (key === 'resdmg') return `<div class="kyf-stat">Niszczenie odporności magicznych o ${strong(stripPercent(value) + '%')} podczas ciosu</div>`;
     if (key === 'pierceb') return `<div class="kyf-stat">${strong(stripPercent(value) + '%')} szans na zablokowanie przebicia</div>`;
     if (key === 'ttl') return `<div class="kyf-stat">Czas trwania: ${strong(value + ' min')}</div>`;
-    if (/^dmgmul(?:absolute|fire|frost|light|physical|poison|wound)?$/.test(key)) return `<div class="kyf-stat">${escapeHtml(LABELS[key] || 'Wszystkie obrażenia')}: ${strong('+' + stripPercent(value) + '%')}</div>`;
+    if (/^dmgmul(?:absolute|fire|frost|light|physical|poison|wound)?$/.test(key)) return `<div class="kyf-stat">${escapeHtml(LABELS[key] || 'Wszystkie obrażenia')}: ${strong(formatSignedPercent(value))}</div>`;
     return `<div class="kyf-stat">${escapeHtml(LABELS[key] || readableKey(key))}: ${strong(formatValue(key, value))}</div>`;
   }
 
   function formatValue(key, value) {
     if (value === true) return 'tak';
-    if (['crit', 'critval', 'critmval', 'resfire', 'resfrost', 'rescold', 'reslight', 'act', 'pierce', 'contra', 'lowcrit'].includes(key)) return '+' + stripPercent(value) + '%';
+    if (['crit', 'critval', 'critmval', 'resfire', 'resfrost', 'rescold', 'reslight', 'act', 'pierce', 'contra', 'lowcrit'].includes(key)) return formatSignedPercent(value);
     if (['ac', 'dmg', 'pdmg', 'acdmg', 'absorb', 'absorbm', 'hp', 'mana', 'manabon', 'energy', 'energybon', 'da', 'ds', 'dz', 'di', 'evade', 'blok', 'heal', 'lowevade'].includes(key)) return (/^-/.test(String(value)) ? '' : '+') + String(value).replace(/,/g, '–');
     return String(value).replace(/,/g, '–');
   }
@@ -1379,6 +1431,10 @@
   }
   function stripPlus(value) { return String(value).replace(/^\+/, ''); }
   function stripPercent(value) { return stripPlus(value).replace(/%$/, ''); }
+  function formatSignedPercent(value) {
+    const normalized = stripPercent(value);
+    return `${/^-/.test(normalized) ? '' : '+'}${normalized}%`;
+  }
   function formatLargeNumber(value) { return String(value).replace(/\d{4,}/g, number => number.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')); }
   function readableKey(key) { return String(key).replace(/_/g, ' ').replace(/^./, letter => letter.toUpperCase()); }
 
